@@ -8,7 +8,7 @@ import javax.imageio.ImageIO;
 
 public class MenuPanel extends JPanel implements ActionListener{ 
 	//properties
-	Timer thetimer = new Timer(1000/60,this);
+	Timer thetimer = new Timer(1000/80,this);
 	BufferedImage menuscreen = new BufferedImage(1280,720,BufferedImage.TYPE_INT_RGB);
 	Graphics menudraw = menuscreen.getGraphics();
 	
@@ -23,6 +23,21 @@ public class MenuPanel extends JPanel implements ActionListener{
 	boolean mouseDown = false;
 	boolean retriggerCatch = false;
 	boolean hostMode = false;
+	
+	Rectangle r = new Rectangle(300, 720-50, 50, 50);
+	Rectangle dummy = new Rectangle(1280/4*3, 720-100, 50, 100);
+	Rectangle[] atks = new Rectangle[2];
+	
+	int defY = 0;
+	int defX = 0;
+	boolean left = false;
+	boolean atking = false;
+	int up = 0;
+	
+	int lastClick = -1;
+	int ticksSince = 0;
+	int atkTicks = 0;
+	int atkCd = 0;
 	
 	phButt[] buttons = new phButt[7];
 	
@@ -82,17 +97,56 @@ public class MenuPanel extends JPanel implements ActionListener{
 		buttons[5].setLocation(555-(int)(pXDist*0.1),812-(int)(pYDist*0.1));
 		buttons[6].setLocation(1438-(int)(pXDist*0.1),600-(int)(pYDist*0.1));
 		
+		r.x += defX;
+		r.y+=defY;
+		
+		// wait for transition
+		if (ticksSince>7) {
+			// bottom right button on main menu
+			if (lastClick==3) {
+				// dummy hitbox
+				menudraw.setColor(Color.red);
+				menudraw.fillRect(dummy.x, dummy.y, dummy.width, dummy.height);
+				// training fighter hitbox
+				menudraw.setColor(Color.black);
+				menudraw.fillRect(r.x, r.y, r.width, r.height);
+				if (atking) {
+					if (atkTicks<10) {
+						if (left) {
+							menudraw.setColor(Color.blue);
+							menudraw.fillRect(atks[up].x, atks[up].y, atks[up].width, atks[up].height);
+						} else {
+							menudraw.setColor(Color.blue);
+							menudraw.fillRect(atks[up].x, atks[up].y, atks[up].width, atks[up].height);
+						}
+					} else if (atkTicks==10) {
+						atkTicks=-1;
+						atking = false;
+						atkCd=40;
+					}
+					atkTicks++;
+				} else if (atkCd>0) {
+					atkCd--;
+				}
+			}  
+		}
+		
+		
 		//draw menu buttons
 		for (int i = 0; i<buttons.length; i++){
 			if (buttons[i].changelook(mousePos, mouseDown, retriggerCatch)){
 				cameraPos = buttons[i].pwp;
 				retriggerCatch = true;
+				lastClick = i;
+				ticksSince = 0;
 			} else if (!mouseDown) {
 				retriggerCatch = false;
 			}
 			menudraw.drawImage(buttons[i].drawme,(int)buttons[i].getX(),(int)buttons[i].getY(),null);
 		}
 		g.drawImage(menuscreen,0,0,null);
+		ticksSince++;
+		if (ticksSince==Integer.MAX_VALUE)ticksSince=80;
 	}
 	
 	//constructor
@@ -111,5 +165,10 @@ public class MenuPanel extends JPanel implements ActionListener{
 		buttons[4] = new phButt(0,0,170,90,0,0,"b1def.png","b1hov.png","b1prs.png");
 		buttons[5] = new phButt(0,0,170,90,0,0,"b1def.png","b1hov.png","b1prs.png");
 		buttons[6] = new phButt(0,0,170,90,0,0,"b1def.png","b1hov.png","b1prs.png");
+		
+		// high atk
+		atks[0] = new Rectangle(r.x+10, r.y, 50, 25);
+		// low atk
+		atks[1] = new Rectangle(r.x+10, r.y+25, 50, 25);
 	}
 }
