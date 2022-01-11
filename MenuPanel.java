@@ -39,7 +39,7 @@ public class MenuPanel extends JPanel implements ActionListener{
 	int atkTicks = 0;
 	int atkCd = 0;
 	
-	phButt[] buttons = new phButt[7];
+	phButt[] buttons = new phButt[9];
 	
 	//methods
 	public void actionPerformed(ActionEvent evt){
@@ -52,8 +52,8 @@ public class MenuPanel extends JPanel implements ActionListener{
 	}
 	
 	public void paintComponent(Graphics g){
-		pXDtarg = (int)((mousePos.x-640)*0.5-cameraPos.x);
-		pYDtarg = (int)((mousePos.y-360)*0.5-cameraPos.y);
+		pXDtarg = (int)((mousePos.x-640)*1-cameraPos.x);
+		pYDtarg = (int)((mousePos.y-360)*1-cameraPos.y);
 		menudraw.setColor(Color.BLACK);
 		pXDist = (int)(0.8*pXDist+0.2*pXDtarg);
 		pYDist = (int)(0.8*pYDist+0.2*pYDtarg);
@@ -62,7 +62,7 @@ public class MenuPanel extends JPanel implements ActionListener{
 		//background
 		menudraw.setColor(new Color(237,237,237));
 		menudraw.fillRect(-320-(int)(pXDist*0.5),-4600-(int)(pYDist*0.5),1920,5600);
-		menudraw.fillRect(-4600-(int)(pXDist*0.5),-180-(int)(pYDist*0.5),16000,1080);
+		menudraw.fillRect(-7360-(int)(pXDist*0.5),-180-(int)(pYDist*0.5),16000,1080);
 		menudraw.setColor(new Color(255,255,255));
 		menudraw.fillOval(320-(int)(pXDist*0.5),50-(int)(pYDist*0.5),640,640);
 		
@@ -85,17 +85,17 @@ public class MenuPanel extends JPanel implements ActionListener{
 		menudraw.setColor(new Color(255,255,255));
 		menudraw.fillRect(-96-(int)(pXDist*0.15),-500-(int)(pYDist*0.15),1472,400);
 		
-		menudraw.setColor(new Color(5,5,14));
-		menudraw.fillRect(-69-(int)(pXDist*0.1),400-(int)(pYDist*0.1),10,150);
-		
 		//change menu buttons position
-		for (int i = 0; i<4; i++){
-			buttons[i].setLocation(144+(i%2*512)-(int)(pXDist*0.1),420+156*(i/2)-(int)(pYDist*0.1));
-		}
-		
-		buttons[4].setLocation(30-(int)(pXDist*0.1),-172-(int)(pYDist*0.1));
-		buttons[5].setLocation(555-(int)(pXDist*0.1),812-(int)(pYDist*0.1));
-		buttons[6].setLocation(1438-(int)(pXDist*0.1),600-(int)(pYDist*0.1));
+		buttons[0].setLocation(144-(int)(pXDist*0.1),420-(int)(pYDist*0.1));
+		buttons[1].setLocation(656-(int)(pXDist*0.1),420-(int)(pYDist*0.1));
+		buttons[2].setLocation(826-(int)(pXDist*0.1),576-(int)(pYDist*0.1));
+		buttons[3].setLocation(485-(int)(pXDist*0.1),576-(int)(pYDist*0.1));
+		buttons[4].setLocation(144-(int)(pXDist*0.1),576-(int)(pYDist*0.1));
+			
+		buttons[5].setLocation(30-(int)(pXDist*0.1),-172-(int)(pYDist*0.1));
+		buttons[6].setLocation(555-(int)(pXDist*0.1),812-(int)(pYDist*0.1));
+		buttons[7].setLocation(1438-(int)(pXDist*0.1),600-(int)(pYDist*0.1));
+		buttons[8].setLocation(-328-(int)(pXDist*0.1),600-(int)(pYDist*0.1));
 		
 		r.x += defX;
 		r.y+=defY;
@@ -158,13 +158,15 @@ public class MenuPanel extends JPanel implements ActionListener{
 		//switch to menu buttons
 		buttons[0] = new phButt(0,0,480,130,0,7920,"b1def.png","b1hov.png","b1prs.png");
 		buttons[1] = new phButt(0,0,480,130,0,7920,"b1def.png","b1hov.png","b1prs.png");
-		buttons[2] = new phButt(0,0,480,86,0,-7920,"b1def.png","b1hov.png","b1prs.png");
-		buttons[3] = new phButt(0,0,480,86,-14080,0,"b1def.png","b1hov.png","b1prs.png");
+		buttons[2] = new phButt(0,0,310,86,0,-7920,"b1def.png","b1hov.png","b1prs.png");
+		buttons[3] = new phButt(0,0,310,86,-14080,0,"b1def.png","b1hov.png","b1prs.png");
+		buttons[4] = new phButt(0,0,310,86,14080,0,"b1def.png","b1hov.png","b1prs.png");
 		
 		//return to menu buttons
-		buttons[4] = new phButt(0,0,170,90,0,0,"b1def.png","b1hov.png","b1prs.png");
 		buttons[5] = new phButt(0,0,170,90,0,0,"b1def.png","b1hov.png","b1prs.png");
 		buttons[6] = new phButt(0,0,170,90,0,0,"b1def.png","b1hov.png","b1prs.png");
+		buttons[7] = new phButt(0,0,170,90,0,0,"b1def.png","b1hov.png","b1prs.png");
+		buttons[8] = new phButt(0,0,170,90,0,0,"b1def.png","b1hov.png","b1prs.png");
 		
 		// high atk
 		atks[0] = new Rectangle(r.x+10, r.y, 50, 25);
