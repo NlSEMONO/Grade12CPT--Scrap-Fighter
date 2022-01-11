@@ -18,13 +18,37 @@ public class AllOutScrap implements ActionListener,WindowListener, KeyListener, 
 	static JFrame theframe = new JFrame ("All Out Scrap!");
 	static MenuPanel themenu = new MenuPanel();
 	static SuperSocketMaster ssm;
-	static JPanel otherpanel = new JPanel();
+	static GamePanel game = new GamePanel();
 	static int pCount = 0;
+	static String strSep = "*K(";
 	
 	//methods
 	public void actionPerformed(ActionEvent evt){
 		if (evt.getSource() == ssm){
-			
+			String[] strMess = ssm.readText().split(strSep);
+			if (strMess[0].equals("ready")) {
+				
+			} else if (strMess[0].equals("attack")) {
+				
+			} else if (strMess[0].equals("connect")) {
+				
+			} else if (strMess[0].equals("move")) {
+				
+			} else if (strMess[0].equals("update")) {
+				
+			} else if (strMess[0].equals("gameEnd")) {
+				
+			} else if (strMess[0].equals("rejectName")) {
+				
+			} else if (strMess[0].equals("sendName")) {
+				
+			} else if (strMess[0].equals("chat")) {
+				
+			} else if (strMess[0].equals("choose")) {
+				
+			} else if (strMess[0].equals("disconnect")) {
+				
+			}
 		}
 	}
 	
@@ -83,7 +107,8 @@ public class AllOutScrap implements ActionListener,WindowListener, KeyListener, 
 		} else if (evt.getKeyChar()==' ') {
 			// ult 
 			
-		} else if (evt.getKeyChar()=='w' || evt.getKeyChar()=='W') {
+		} 
+		if (evt.getKeyChar()=='w' || evt.getKeyChar()=='W') {
 			themenu.defY = -5;
 		} else if (evt.getKeyChar()=='a' || evt.getKeyChar()=='A') {
 			themenu.defX = -5;
@@ -136,10 +161,16 @@ public class AllOutScrap implements ActionListener,WindowListener, KeyListener, 
 	
 	public void mouseMoved (MouseEvent evt){
 		themenu.mousePos = new Point(evt.getX()-8, evt.getY()-30);
+		
 	}
 	
 	public void mouseDragged (MouseEvent evt){
 		//probably won't need
+	}
+	
+	public static void toGame() {
+		theframe.setContentPane(game);
+		theframe.pack();
 	}
 	
 	//constructor
@@ -149,7 +180,7 @@ public class AllOutScrap implements ActionListener,WindowListener, KeyListener, 
 		theframe.addKeyListener(this);
 		theframe.addWindowListener(this);
 		themenu.setPreferredSize(new Dimension(1280,720));
-		otherpanel.setPreferredSize(new Dimension(1280,720));
+		game.setPreferredSize(new Dimension(1280,720));
 		theframe.setContentPane(themenu);
 		theframe.pack();
 		theframe.setDefaultCloseOperation(3);
