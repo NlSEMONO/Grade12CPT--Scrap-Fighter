@@ -11,9 +11,10 @@ import java.awt.image.*;
 
 public class SFCharStatsRender{
 
-	public static String[][] CharStatsRender(){
+	public String[][] CharStatsRender(){
 		
-		String strLine;
+		String strLine = "";
+		BufferedReader br= new BufferedReader(new InputStreamReader(getClass().getResourceAsStream("CharacterStats.csv")));
 		
 		int numofrow = 5;
 		int numofcolumn = 4;
@@ -22,20 +23,22 @@ public class SFCharStatsRender{
 		
 		
 		
-
-		
 		String dataFile [][];
 		dataFile = new String [numofrow][numofcolumn];
 		
 		
 		
-		for(int currentrow = 0; currentrow < 4; i++){
+		for(int currentrow = 0; currentrow < 4; currentrow++){
 			for (int currentcolumn = 0; currentcolumn < 3; currentcolumn++){
-				if (i != 0){
+				if (currentrow != 0){
 					String strLineSplit[];
-					strLine = br.readLine();
+					try{
+						strLine = br.readLine();					
+					}catch(IOException e){
+						System.out.println("Error: Problem Reading From Character Stats CSV");
+					}
 					strLineSplit = strLine.split(",");
-					dataFile[currentrow][currentcolumn] = strLineSplit[i];
+					dataFile[currentrow][currentcolumn] = strLineSplit[currentcolumn];
 				}else{
 					System.out.println("Loading Up Character Stats");
 				}
@@ -43,10 +46,12 @@ public class SFCharStatsRender{
 		
 		}	
 		
+		return dataFile;
+		
 	}
 	
 	public SFCharStatsRender(){
-		BufferedReader br = new BufferedReader(new InputStreamReader(getClass().getResourceAsStream("CharacterStats.csv")));
+		
 	}
 
 }
