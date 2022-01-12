@@ -110,6 +110,7 @@ public class MenuPanel extends JPanel implements ActionListener{
 				// training fighter hitbox
 				menudraw.setColor(Color.black);
 				menudraw.fillRect(r.x, r.y, r.width, r.height);
+				menudraw.drawString("Q - High attack              E - Low attack", 200, 50);
 				if (atking) {
 					if (atkTicks<10) {
 						if (left) {
@@ -128,7 +129,16 @@ public class MenuPanel extends JPanel implements ActionListener{
 				} else if (atkCd>0) {
 					atkCd--;
 				}
+			} 
+			
+			/* hardcoded swap to game screen -- temporary 
+			 else if (lastClick==1) {
+				AllOutScrap.toGame();
+			} else if (lastClick==0) {
+				AllOutScrap.toGame();
 			}  
+			 */
+			
 		}
 		
 		

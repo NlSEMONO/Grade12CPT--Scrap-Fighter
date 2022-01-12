@@ -54,6 +54,7 @@ public class GamePanel extends JPanel implements ActionListener{
 	}
 	
 	public GamePanel() {
+		super();
 		col[0] = Color.red;
 		col[1] = Color.blue;
 	}
