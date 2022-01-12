@@ -1,3 +1,4 @@
+//Importing the necessary java libraries
 import java.io.*;
 import java.lang.Math;
 import java.awt.*;
@@ -9,25 +10,27 @@ import java.util.Scanner;
 import java.awt.*;
 import java.awt.image.*;
 
+//This is a model type class that will load the character stats from the CSV file into a 2D array that can quickly be referenced
 public class SFCharStatsRender{
 
 	public String[][] CharStatsRender(){
 		
 		String strLine = "";
-		BufferedReader br= new BufferedReader(new InputStreamReader(getClass().getResourceAsStream("CharacterStats.csv")));
 		
+		//A BufferedReader that is 
+		BufferedReader br = new BufferedReader(new InputStreamReader(getClass().getResourceAsStream("CharacterStats.csv")));
+		
+		//Variables that specifies how many rows and columns are created for the 2D array
 		int numofrow = 5;
 		int numofcolumn = 4;
 		int row = 0;
 		int column = 0;
 		
-		
-		
+		//Creates a String type 2D array. Values will be parsed back into integers when they are called upon
 		String dataFile [][];
 		dataFile = new String [numofrow][numofcolumn];
 		
-		
-		
+		//Forloops will load the data from the CSV file into the 2D array
 		for(int currentrow = 0; currentrow < 4; currentrow++){
 			for (int currentcolumn = 0; currentcolumn < 3; currentcolumn++){
 				if (currentrow != 0){
@@ -46,6 +49,7 @@ public class SFCharStatsRender{
 		
 		}	
 		
+		//Returns the 2D array
 		return dataFile;
 		
 	}
