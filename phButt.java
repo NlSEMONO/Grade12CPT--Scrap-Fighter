@@ -27,16 +27,23 @@ public class phButt extends Rectangle {
 		return false;
 	}
 	
+	public BufferedImage img(String fileName) {
+		// jar ver only
+		try {
+			return ImageIO.read(getClass().getResourceAsStream(fileName));
+		} catch (IOException e) {
+			System.out.println("bruh moment");
+		}
+		return null;
+	}
+	
 	public phButt (int intX,int intY,int intW, int intH, int pwpX, int pwpY, String imgdef, String imghov, String imgprs){
 		super(intX,intY,intW,intH);
 		this.pwp = new Point(pwpX, pwpY);
-		try{
-			this.imgRoster[0] = ImageIO.read(new File(imgdef));
-			this.imgRoster[1] = ImageIO.read(new File(imghov));
-			this.imgRoster[2] = ImageIO.read(new File(imgprs));
-		} catch (IOException e){
-			System.out.println("unable to load file");
-		}
+		this.imgRoster[0] = img(imgdef);
+		this.imgRoster[1] = img(imghov);
+		this.imgRoster[2] = img(imgprs);
+		
 		d.setBackground(new Color(0,0,0,0));
 	}
 }

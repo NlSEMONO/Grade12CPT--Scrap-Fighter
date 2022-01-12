@@ -11,6 +11,7 @@ public class MenuPanel extends JPanel implements ActionListener{
 	Timer thetimer = new Timer(1000/80,this);
 	BufferedImage menuscreen = new BufferedImage(1280,720,BufferedImage.TYPE_INT_RGB);
 	Graphics menudraw = menuscreen.getGraphics();
+	BufferedImage cred;
 	
 	//combine mouse x and y into one point
 	Point mousePos = new Point(640,360);
@@ -18,6 +19,7 @@ public class MenuPanel extends JPanel implements ActionListener{
 	int pYDtarg = 0;
 	int pXDist = 0;
 	int pYDist = 0;
+	
 	//combine camera x and y into one point
 	Point cameraPos = new Point(0,0);
 	boolean mouseDown = false;
@@ -27,6 +29,7 @@ public class MenuPanel extends JPanel implements ActionListener{
 	Rectangle r = new Rectangle(300, 720-50, 50, 50);
 	Rectangle dummy = new Rectangle(1280/4*3, 720-100, 50, 100);
 	Rectangle[] atks = new Rectangle[2];
+	phButt[] select = new phButt[4];
 	
 	int defY = 0;
 	int defX = 0;
@@ -102,7 +105,7 @@ public class MenuPanel extends JPanel implements ActionListener{
 		
 		// wait for transition
 		if (ticksSince>7) {
-			// bottom right button on main menu
+			// bottom middle button on main menu
 			if (lastClick==3) {
 				// dummy hitbox
 				menudraw.setColor(Color.red);
@@ -110,7 +113,8 @@ public class MenuPanel extends JPanel implements ActionListener{
 				// training fighter hitbox
 				menudraw.setColor(Color.black);
 				menudraw.fillRect(r.x, r.y, r.width, r.height);
-				menudraw.drawString("Q - High attack              E - Low attack", 200, 50);
+				menudraw.drawString("Q - High attack", 200, 50);
+				menudraw.drawString("E - Low attack", 700, 50);
 				if (atking) {
 					if (atkTicks<10) {
 						if (left) {
@@ -130,17 +134,36 @@ public class MenuPanel extends JPanel implements ActionListener{
 					atkCd--;
 				}
 			} 
+			// bottom right on main menu
+			else if (lastClick==2) {
+				menudraw.drawImage(cred, 0, 0, null);
+			} 
 			
-			/* hardcoded swap to game screen -- temporary 
-			 else if (lastClick==1) {
-				AllOutScrap.toGame();
-			} else if (lastClick==0) {
-				AllOutScrap.toGame();
-			}  
-			 */
+			// bottom left on main menu
+			else if (lastClick==4) {
+				menudraw.setColor(Color.black);
+				menudraw.drawString("High scores (fastest round win in (s))", 400, 50);
+				menudraw.drawString("Username", 50, 100);
+				menudraw.drawString("Time (s)", 1280-250, 100);
+			}
+			
+			// host game button & join game button
+			 else if (lastClick==0 || lastClick == 1) {
+				 // draw character select buttons
+				 for (int i=0;i<4;i++) select[i].setLocation(100+(200*(i%2)), 100+(200*(i/2)));
+					for (int i=0;i<4;i++) {
+						if (select[i].changelook(mousePos, mouseDown, retriggerCatch)){
+							cameraPos = select[i].pwp;
+							retriggerCatch = true;
+							System.out.println("clicked");
+						} else if (!mouseDown) {
+							retriggerCatch = false;
+						}
+						menudraw.drawImage(select[i].drawme,(int)select[i].getX(),(int)select[i].getY(),null);
+					}
+			} 
 			
 		}
-		
 		
 		//draw menu buttons
 		for (int i = 0; i<buttons.length; i++){
@@ -158,6 +181,18 @@ public class MenuPanel extends JPanel implements ActionListener{
 		ticksSince++;
 		if (ticksSince==Integer.MAX_VALUE)ticksSince=80;
 	}
+	
+	public BufferedImage img(String fileName) {
+		// jar ver only
+		try {
+			return ImageIO.read(getClass().getResourceAsStream(fileName));
+		} catch (IOException e) {
+			System.out.println(e.getMessage());
+		}
+		return null;
+	}
+	
+	
 	
 	//constructor
 	public MenuPanel(){
@@ -178,9 +213,18 @@ public class MenuPanel extends JPanel implements ActionListener{
 		buttons[7] = new phButt(0,0,170,90,0,0,"b1def.png","b1hov.png","b1prs.png");
 		buttons[8] = new phButt(0,0,170,90,0,0,"b1def.png","b1hov.png","b1prs.png");
 		
+		// character select buttons
+		for (int i=0;i<4;i++) {
+			select[i] = new phButt(0, 0, 200, 200,0,7920,"f"+i+"def.jpg","f"+i+"def.jpg","f"+i+"def.jpg");
+		}
+		
 		// high atk
 		atks[0] = new Rectangle(r.x+10, r.y, 50, 25);
 		// low atk
 		atks[1] = new Rectangle(r.x+10, r.y+25, 50, 25);
+		
+		cred = img("ScrapFighter-CreditsImage.png");
+		
+		
 	}
 }
