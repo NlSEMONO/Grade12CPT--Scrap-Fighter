@@ -12,6 +12,7 @@ public class MenuPanel extends JPanel implements ActionListener{
 	BufferedImage menuscreen = new BufferedImage(1280,720,BufferedImage.TYPE_INT_RGB);
 	Graphics menudraw = menuscreen.getGraphics();
 	BufferedImage cred;
+	BufferedImage[] selectImg = new BufferedImage[3]; 
 	
 	//combine mouse x and y into one point
 	Point mousePos = new Point(640,360);
@@ -36,6 +37,8 @@ public class MenuPanel extends JPanel implements ActionListener{
 	boolean left = false;
 	boolean atking = false;
 	int up = 0;
+	int selected = -1;
+	int hovered = -1;
 	
 	int lastClick = -1;
 	int ticksSince = 0;
@@ -148,21 +151,32 @@ public class MenuPanel extends JPanel implements ActionListener{
 			}
 			
 			// host game button & join game button
-			 else if (lastClick==0 || lastClick == 1) {
-				 // draw character select buttons
-				 for (int i=0;i<4;i++) select[i].setLocation(100+(200*(i%2)), 100+(200*(i/2)));
-					for (int i=0;i<4;i++) {
-						if (select[i].changelook(mousePos, mouseDown, retriggerCatch)){
-							cameraPos = select[i].pwp;
-							retriggerCatch = true;
-							System.out.println("clicked");
-						} else if (!mouseDown) {
-							retriggerCatch = false;
-						}
-						menudraw.drawImage(select[i].drawme,(int)select[i].getX(),(int)select[i].getY(),null);
+			else if (lastClick==0 || lastClick == 1) {
+			 // draw character select buttons
+				
+				for (int i=0;i<4;i++) select[i].setLocation(100+(200*(i%2)), 100+(200*(i/2)));
+				for (int i=0;i<4;i++) {
+					if (select[i].changelook(mousePos, mouseDown, retriggerCatch)){
+						cameraPos = select[i].pwp;
+						retriggerCatch = true;
+						selected = i;
+						hovered = -1;
+					} else if (!mouseDown) {
+						retriggerCatch = false;
+					} 
+					
+					if (select[i].contains(mousePos)&&!select[i].changelook(mousePos, mouseDown, retriggerCatch)) {
+						hovered = i;
 					}
+					menudraw.drawImage(select[i].drawme,(int)select[i].getX(),(int)select[i].getY(),null);
+				}
+				if (selected!=-1) {
+					menudraw.drawImage(selectImg[2], 100+(200*(selected%2)), 100+(200*(selected/2)), null);
+				} 
+				if (hovered!=-1) {
+					menudraw.drawImage(selectImg[0], 100+(200*(hovered%2)), 100+(200*(hovered/2)), null);
+				}
 			} 
-			
 		}
 		
 		//draw menu buttons
@@ -225,6 +239,10 @@ public class MenuPanel extends JPanel implements ActionListener{
 		
 		cred = img("ScrapFighter-CreditsImage.png");
 		
+		// hover, other player's selection, your selection
+		selectImg[0] = img("hover.png");
+		selectImg[1] = img("otherselect.png");
+		selectImg[2] = img("select.png");
 		
 	}
 }
