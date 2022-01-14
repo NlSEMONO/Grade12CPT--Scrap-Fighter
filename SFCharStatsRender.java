@@ -21,7 +21,7 @@ public class SFCharStatsRender{
 		BufferedReader br = new BufferedReader(new InputStreamReader(getClass().getResourceAsStream("CharacterStats.csv")));
 		
 		//Variables that specifies how many rows and columns are created for the 2D array
-		int numofrow = 5;
+		int numofrow = 4;
 		int numofcolumn = 4;
 		int row = 0;
 		int column = 0;
@@ -31,19 +31,22 @@ public class SFCharStatsRender{
 		dataFile = new String [numofrow][numofcolumn];
 		
 		//Forloops will load the data from the CSV file into the 2D array
-		for(int currentrow = 0; currentrow < 4; currentrow++){
-			for (int currentcolumn = 0; currentcolumn < 3; currentcolumn++){
-				if (currentrow != 0){
-					String strLineSplit[];
-					try{
-						strLine = br.readLine();					
-					}catch(IOException e){
-						System.out.println("Error: Problem Reading From Character Stats CSV");
-					}
-					strLineSplit = strLine.split(",");
-					dataFile[currentrow][currentcolumn] = strLineSplit[currentcolumn];
-				}else{
-					System.out.println("Loading Up Character Stats");
+		for(int currentrow = 0; currentrow < numofrow+1; currentrow++){
+			if (currentrow != 0){
+				String strLineSplit[];
+				try{
+					strLine = br.readLine();					
+				}catch(IOException e){
+					System.out.println("Error: Problem Reading From Character Stats CSV");
+				}
+				strLineSplit = strLine.split(",");
+				
+				dataFile[currentrow-1] = strLineSplit;
+			}else{
+				System.out.println("Loading Up Character Stats");
+				try{
+					strLine = br.readLine();					
+				}catch(IOException e){
 				}
 			}
 		

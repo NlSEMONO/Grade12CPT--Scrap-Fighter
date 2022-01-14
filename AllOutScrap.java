@@ -21,6 +21,8 @@ public class AllOutScrap implements ActionListener,WindowListener, KeyListener, 
 	static GamePanel game = new GamePanel();
 	static int pCount = 0;
 	static String strSep = "*K(";
+	static SFCharStatsRender loader = new SFCharStatsRender();
+	static String[][] stats;
 	
 	//methods
 	public void actionPerformed(ActionEvent evt){
@@ -186,6 +188,7 @@ public class AllOutScrap implements ActionListener,WindowListener, KeyListener, 
 		theframe.setDefaultCloseOperation(3);
 		theframe.setResizable(false);
 		theframe.setVisible(true);
+		stats = loader.CharStatsRender();
 	}
 	
 	//main method

@@ -153,23 +153,29 @@ public class MenuPanel extends JPanel implements ActionListener{
 			// host game button & join game button
 			else if (lastClick==0 || lastClick == 1) {
 			 // draw character select buttons
-				
 				for (int i=0;i<4;i++) select[i].setLocation(100+(200*(i%2)), 100+(200*(i/2)));
 				for (int i=0;i<4;i++) {
 					if (select[i].changelook(mousePos, mouseDown, retriggerCatch)){
 						cameraPos = select[i].pwp;
 						retriggerCatch = true;
-						selected = i;
+						
+						// find which button was clicked
+						selected = selected == i ? -1 : i;
 						hovered = -1;
 					} else if (!mouseDown) {
 						retriggerCatch = false;
 					} 
 					
+					// check if button is being hovered over
 					if (select[i].contains(mousePos)&&!select[i].changelook(mousePos, mouseDown, retriggerCatch)) {
 						hovered = i;
+					} else if (hovered!=-1) {
+						if (!select[hovered].contains(mousePos)) hovered = -1;
 					}
 					menudraw.drawImage(select[i].drawme,(int)select[i].getX(),(int)select[i].getY(),null);
 				}
+				
+				// if a selection/hover has been made, draw the appropriate image
 				if (selected!=-1) {
 					menudraw.drawImage(selectImg[2], 100+(200*(selected%2)), 100+(200*(selected/2)), null);
 				} 
