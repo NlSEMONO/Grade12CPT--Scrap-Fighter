@@ -54,7 +54,7 @@ public class MenuPanel extends JPanel implements ActionListener{
 		if (evt.getSource() == thetimer){
 			this.repaint();
 		}
-	}
+	}	
 	
 	public void paintComponent(Graphics g){
 		pXDtarg = (int)((mousePos.x-640)*0.1-cameraPos.x);

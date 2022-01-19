@@ -23,6 +23,7 @@ public class AllOutScrap implements ActionListener,WindowListener, KeyListener, 
 	static String strSep = "*K(";
 	static SFCharStatsRender loader = new SFCharStatsRender();
 	static String[][] stats;
+	static boolean inGame = false;
 	
 	//methods
 	public void actionPerformed(ActionEvent evt){
@@ -83,56 +84,111 @@ public class AllOutScrap implements ActionListener,WindowListener, KeyListener, 
 	}
 	
 	public void keyReleased(KeyEvent evt){
-		if (evt.getKeyChar()=='w' || evt.getKeyChar()=='W') {
-			themenu.defY = 0;
-		} else if (evt.getKeyChar()=='a' || evt.getKeyChar()=='A') {
-			themenu.defX = 0;
-			themenu.left = true;
-		} else if (evt.getKeyChar()=='s' || evt.getKeyChar()=='S') {
-			themenu.defY = 0;
-		} else if (evt.getKeyChar()=='d' || evt.getKeyChar()=='D') {
-			themenu.defX = 0;
-			themenu.left = false;
-		} 
+		if (!inGame) {
+			if (evt.getKeyChar()=='w' || evt.getKeyChar()=='W') {
+				themenu.defY = 0;
+			} else if (evt.getKeyChar()=='a' || evt.getKeyChar()=='A') {
+				themenu.defX = 0;
+				themenu.left = true;
+			} else if (evt.getKeyChar()=='s' || evt.getKeyChar()=='S') {
+				themenu.defY = 0;
+			} else if (evt.getKeyChar()=='d' || evt.getKeyChar()=='D') {
+				themenu.defX = 0;
+				themenu.left = false;
+			} 
+		} else {
+			if (evt.getKeyChar()=='a' || evt.getKeyChar()=='A') {
+				game.defX = 0;
+				game.left = true;
+			} else if (evt.getKeyChar()=='s' || evt.getKeyChar()=='S') {
+				game.duck = false;
+			} else if (evt.getKeyChar()=='d' || evt.getKeyChar()=='D') {
+				game.defX = 0;
+				game.left = false;
+			} 
+		}
 	}
 	
 	public void keyPressed(KeyEvent evt){
-		themenu.atking = false;
-		if (evt.getKeyChar()=='q'||evt.getKeyChar()=='Q') {
-			// high attack
-			if (themenu.atkCd<1) themenu.atking = true;
-			themenu.up = 0;
-		} else if (evt.getKeyChar()=='e'||evt.getKeyChar()=='E') {
-			// low attack
-			if (themenu.atkCd<1) themenu.atking = true;
-			themenu.up = 1;
-		} else if (evt.getKeyChar()==' ') {
-			// ult 
+		if (!inGame) {
+			themenu.atking = false;
+			if (evt.getKeyChar()=='q'||evt.getKeyChar()=='Q') {
+				// high attack
+				if (themenu.atkCd<1) themenu.atking = true;
+				themenu.up = 0;
+			} else if (evt.getKeyChar()=='e'||evt.getKeyChar()=='E') {
+				// low attack
+				if (themenu.atkCd<1) themenu.atking = true;
+				themenu.up = 1;
+			} else if (evt.getKeyChar()==' ') {
+				// ult 
+				this.toGame();
+			} 
+			if (evt.getKeyChar()=='w' || evt.getKeyChar()=='W') {
+				themenu.defY = -5;
+			} else if (evt.getKeyChar()=='a' || evt.getKeyChar()=='A') {
+				themenu.defX = -5;
+				themenu.left = true;
+			} else if (evt.getKeyChar()=='s' || evt.getKeyChar()=='S') {
+				themenu.defY = 5;
+			} else if (evt.getKeyChar()=='d' || evt.getKeyChar()=='D') {
+				themenu.defX = 5;
+				themenu.left = false;
+			} 
+			if (themenu.left) {
+				themenu.atks[0].x = themenu.r.x-40;
+				themenu.atks[1].x = themenu.r.x-40;
+			} else {
+				themenu.atks[0].x = themenu.r.x+40;
+				themenu.atks[1].x = themenu.r.x+40;
+			}
+			themenu.atks[0].y = themenu.r.y;
+			themenu.atks[1].y = themenu.r.y+25;
 			
-		} 
-		if (evt.getKeyChar()=='w' || evt.getKeyChar()=='W') {
-			themenu.defY = -5;
-		} else if (evt.getKeyChar()=='a' || evt.getKeyChar()=='A') {
-			themenu.defX = -5;
-			themenu.left = true;
-		} else if (evt.getKeyChar()=='s' || evt.getKeyChar()=='S') {
-			themenu.defY = 5;
-		} else if (evt.getKeyChar()=='d' || evt.getKeyChar()=='D') {
-			themenu.defX = 5;
-			themenu.left = false;
-		} 
-		if (themenu.left) {
-			themenu.atks[0].x = themenu.r.x-40;
-			themenu.atks[1].x = themenu.r.x-40;
+			if (themenu.atking&&themenu.atks[themenu.up].intersects(themenu.dummy)&&themenu.atkTicks==0&&themenu.atkCd<1) {
+				System.out.println("OUCH!");
+			}
 		} else {
-			themenu.atks[0].x = themenu.r.x+40;
-			themenu.atks[1].x = themenu.r.x+40;
-		}
-		themenu.atks[0].y = themenu.r.y;
-		themenu.atks[1].y = themenu.r.y+25;
-		
-		if (themenu.atking&&themenu.atks[themenu.up].intersects(themenu.dummy)&&themenu.atkTicks==0&&themenu.atkCd<1) {
-			System.out.println("OUCH!");
+			
+			game.atking = false;
+			if (evt.getKeyChar()=='q'||evt.getKeyChar()=='Q') {
+				// high attack
+				if (game.atkCd<1) game.atking = true;
+				game.up = 0;
+			} else if (evt.getKeyChar()=='e'||evt.getKeyChar()=='E') {
+				// low attack
+				if (game.atkCd<1) game.atking = true;
+				game.up = 1;
+			} else if (evt.getKeyChar()==' ') {
+				// ult 
+				
+			} 
+			if (evt.getKeyChar()=='w' || evt.getKeyChar()=='W') {
+				game.jump = true;
+			} else if (evt.getKeyChar()=='a' || evt.getKeyChar()=='A') {
+				game.defX = -5;
+				game.left = true;
+			} else if (evt.getKeyChar()=='s' || evt.getKeyChar()=='S') {
+				game.duck = true;
+			} else if (evt.getKeyChar()=='d' || evt.getKeyChar()=='D') {
+				game.defX = 5;
+				game.left = false;
+			} 
+			if (game.left) {
+				game.atks[0].x = game.fighter.x-40;
+				game.atks[1].x = game.fighter.x-40;
+			} else {
+				game.atks[0].x = game.fighter.x+40;
+				game.atks[1].x = game.fighter.x+40;
+			}
+			game.atks[0].y = game.fighter.y;
+			game.atks[1].y = game.fighter.y+25;
+			
+			if (game.atking&&game.atks[game.up].intersects(game.dummy)&&game.atkTicks==0&&game.atkCd<1) {
+				System.out.println("OUCH!");
+			}
+			
+			game.repaint();
 		}
 	}
 	
@@ -173,6 +229,7 @@ public class AllOutScrap implements ActionListener,WindowListener, KeyListener, 
 	public static void toGame() {
 		theframe.setContentPane(game);
 		theframe.pack();
+		inGame = true;
 	}
 	
 	//constructor
