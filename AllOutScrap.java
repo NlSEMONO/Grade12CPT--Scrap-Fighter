@@ -245,7 +245,12 @@ public class AllOutScrap implements ActionListener,WindowListener, KeyListener, 
 		theframe.setDefaultCloseOperation(3);
 		theframe.setResizable(false);
 		theframe.setVisible(true);
-		stats = loader.CharStatsRender();
+		stats = loader.CharStatsRender("CharacterStats.csv", 4, 4);
+		for (int i=0;i<4;i++) {
+			for (int j=0;j<4;j++) {
+				System.out.println(stats[i][j]);
+			}
+		}
 	}
 	
 	//main method
