@@ -1,7 +1,7 @@
 Width ,Height,Width Pixels From Top Left,Height Pixels From Top Left,,,
-48,158,178,98,,MoBy,(High Attack)
+79,47,166,126,,MoBy,(High Attack)
 83,70,164,186,,,(Low Attack)
-100,130,178,126,,,(Ult Attack)
+100,170,203,86,,,(Ult Attack)
 83,68,189,99,,Luz,(High Attack)
 91,51,181,178,,,(Low Attack)
 91,157,181,99,,,(Ult Attack)
@@ -10,4 +10,4 @@ Width ,Height,Width Pixels From Top Left,Height Pixels From Top Left,,,
 100,141,179,115,,,(Ult Attack)
 97,71,136,135,,Ameila,(High Attack)
 52,64,166,192,,,(Low Attack)
-100,200,171,56,,,(Ult Attack)
+150,200,165,56,,,(Ult Attack)
