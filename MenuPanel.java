@@ -68,13 +68,13 @@ public class MenuPanel extends JPanel implements ActionListener{
 		menudraw.setColor(new Color(237,237,237));
 		menudraw.fillRect(0-pXDist,0-pYDist,1280,720);
 		menudraw.setColor(new Color(202,202,202));
-		menudraw.fillRect(0-pXDist,-792-pYDist,1280,720);
+		menudraw.fillRect(0-pXDist,-828-pYDist,1280,720);
 		menudraw.setColor(new Color(185,185,185));
-		menudraw.fillRect(1408-pXDist,0-pYDist,1280,720);
+		menudraw.fillRect(1472-pXDist,0-pYDist,1280,720);
 		menudraw.setColor(new Color(170,170,170));
-		menudraw.fillRect(0-pXDist,-792-pYDist,1280,720);
+		menudraw.fillRect(0-pXDist,-828-pYDist,1280,720);
 		menudraw.setColor(new Color(140,140,140));
-		menudraw.fillRect(-1408-pXDist,0-pYDist,1280,720);
+		menudraw.fillRect(-1472-pXDist,0-pYDist,1280,720);
 		
 		//change menu buttons position
 		buttons[0].setLocation(144-(int)(pXDist*1.5),420-(int)(pYDist*1.5));
@@ -128,15 +128,15 @@ public class MenuPanel extends JPanel implements ActionListener{
 		// bottom left on main menu
 		else if (lastClick==4) {
 			menudraw.setColor(Color.black);
-			menudraw.drawString("High scores (fastest round win in (s))", 400, 50);
-			menudraw.drawString("Username", 50, 100);
-			menudraw.drawString("Time (s)", 1280-250, 100);
+			menudraw.drawString("High scores (fastest round win in (s))", -1440-(int)(pXDist*1.25), 50-(int)(pYDist*1.25));
+			menudraw.drawString("Username", -1790-(int)(pXDist*1.25), 100-(int)(pYDist*1.25));
+			menudraw.drawString("Time (s)", -810-(int)(pXDist*1.25), 100-(int)(pYDist*1.25));
 		}
 		
 		// host game button & join game button
 		else if (lastClick==0 || lastClick == 1) {
 		 // draw character select buttons
-			for (int i=0;i<4;i++) select[i].setLocation(100+(200*(i%2)), 100+(200*(i/2)));
+			for (int i=0;i<4;i++) select[i].setLocation(100+(200*(i%2))-(int)(pXDist*1.25), -935+(200*(i/2)-(int)(pYDist*1.25)));
 			for (int i=0;i<4;i++) {
 				if (select[i].changelook(mousePos, mouseDown, retriggerCatch)){
 					cameraPos = select[i].pwp;
@@ -160,10 +160,10 @@ public class MenuPanel extends JPanel implements ActionListener{
 			
 			// if a selection/hover has been made, draw the appropriate image
 			if (selected!=-1) {
-				menudraw.drawImage(selectImg[2], 100+(200*(selected%2)), 100+(200*(selected/2)), null);
+				menudraw.drawImage(selectImg[2], 100+(200*(selected%2))-(int)(pXDist*1.25), -935+(200*(selected/2))-(int)(pYDist*1.25), null);
 			} 
 			if (hovered!=-1) {
-				menudraw.drawImage(selectImg[0], 100+(200*(hovered%2)), 100+(200*(hovered/2)), null);
+				menudraw.drawImage(selectImg[0], 100+(200*(hovered%2))-(int)(pXDist*1.25), -935+(200*(hovered/2))-(int)(pYDist*1.25), null);
 			}
 		} 
 		
