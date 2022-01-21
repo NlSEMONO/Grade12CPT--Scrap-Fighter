@@ -22,6 +22,7 @@ public class AllOutScrap implements ActionListener,WindowListener, KeyListener, 
 	static SFCharStatsRender loader = new SFCharStatsRender();
 	static String[][] statistics;
 	static String[][] hbxes;
+	static String[][] atkhbxes;
 	static boolean inGame = false;
 	static boolean[] locked = new boolean[2];
 	static int[] chars = new int[2];
@@ -141,7 +142,6 @@ public class AllOutScrap implements ActionListener,WindowListener, KeyListener, 
 				System.out.println("OUCH!");
 			}
 		} else {
-			
 			game.atking = false;
 			if (evt.getKeyChar()=='q'||evt.getKeyChar()=='Q') {
 				// high attack
@@ -166,15 +166,7 @@ public class AllOutScrap implements ActionListener,WindowListener, KeyListener, 
 				game.defX = 5;
 				game.left = false;
 			} 
-			if (game.left) {
-				game.atks[0].x = game.fighter.x-40;
-				game.atks[1].x = game.fighter.x-40;
-			} else {
-				game.atks[0].x = game.fighter.x+40;
-				game.atks[1].x = game.fighter.x+40;
-			}
-			game.atks[0].y = game.fighter.y;
-			game.atks[1].y = game.fighter.y+25;
+			
 			
 			if (game.atking&&game.atks[game.up].intersects(game.dummy)&&game.atkTicks==0&&game.atkCd<1) {
 				System.out.println("OUCH!");
@@ -227,10 +219,11 @@ public class AllOutScrap implements ActionListener,WindowListener, KeyListener, 
 			
 			// load character hitboxes into game
 			System.out.println(chars[0]+" "+chars[1]);
-			for (int i=0;i<4;i++) for (int j=0;j<4;j++) game.hbxH[i][j] = Integer.parseInt(hbxes[chars[0]+i][j]); 
-			for (int i=0;i<4;i++) for (int j=0;j<4;j++) game.hbxC[i][j] = Integer.parseInt(hbxes[chars[1]+i][j]); 
-			game.fighter.y = 720-game.hbxH[chars[0]][1];
-			game.dummy.y = 720-game.hbxH[chars[1]][1];
+			for (int i=0;i<4;i++) for (int j=0;j<4;j++) game.hbxH[i][j] = Integer.parseInt(hbxes[4*chars[0]+i][j]); 
+			for (int i=0;i<4;i++) for (int j=0;j<4;j++) game.hbxC[i][j] = Integer.parseInt(hbxes[4*chars[1]+i][j]); 
+			for (int i=0;i<3;i++) for (int j=0;j<4;j++) game.atkhbxH[i][j] = Integer.parseInt(atkhbxes[3*chars[0]+i][j]); 
+			for (int i=0;i<3;i++) for (int j=0;j<4;j++) game.atkhbxC[i][j] = Integer.parseInt(atkhbxes[3*chars[1]+i][j]); 
+			
 		} else if (!blnS) {
 			theframe.setContentPane(game);
 			theframe.pack();
@@ -292,6 +285,7 @@ public class AllOutScrap implements ActionListener,WindowListener, KeyListener, 
 		theframe.setVisible(true);
 		statistics = loader.CharStatsRender("Basic Character Stats - Sheet1.csv", 4, 4);
 		hbxes = loader.CharStatsRender("Main Body Hitbox Stats - Sheet1.csv", 16, 4);
+		atkhbxes = loader.CharStatsRender("High, Low and Ult Hitbox Stats - Sheet1.csv", 12, 4);
 	}
 	
 	//main method
