@@ -13,46 +13,23 @@ public class AllOutScrap implements ActionListener,WindowListener, KeyListener, 
 	
 	//properties
 	
-	
-	
 	static JFrame theframe = new JFrame ("All Out Scrap!");
 	static MenuPanel themenu = new MenuPanel();
 	static SuperSocketMaster ssm;
 	static GamePanel game = new GamePanel();
 	static int pCount = 0;
-	static String strSep = "*K(";
+	static String strSep = "6b9";
 	static SFCharStatsRender loader = new SFCharStatsRender();
-	static String[][] stats;
+	static String[][] statistics;
+	static String[][] hbxes;
 	static boolean inGame = false;
+	static boolean[] locked = new boolean[2];
+	static int[] chars = new int[2];
+	static boolean blnS;
 	
 	//methods
 	public void actionPerformed(ActionEvent evt){
-		if (evt.getSource() == ssm){
-			String[] strMess = ssm.readText().split(strSep);
-			if (strMess[0].equals("ready")) {
-				
-			} else if (strMess[0].equals("attack")) {
-				
-			} else if (strMess[0].equals("connect")) {
-				
-			} else if (strMess[0].equals("move")) {
-				
-			} else if (strMess[0].equals("update")) {
-				
-			} else if (strMess[0].equals("gameEnd")) {
-				
-			} else if (strMess[0].equals("rejectName")) {
-				
-			} else if (strMess[0].equals("sendName")) {
-				
-			} else if (strMess[0].equals("chat")) {
-				
-			} else if (strMess[0].equals("choose")) {
-				
-			} else if (strMess[0].equals("disconnect")) {
-				
-			}
-		}
+		
 	}
 	
 	public void windowActivated(WindowEvent evt){
@@ -122,7 +99,22 @@ public class AllOutScrap implements ActionListener,WindowListener, KeyListener, 
 				themenu.up = 1;
 			} else if (evt.getKeyChar()==' ') {
 				// ult 
-				this.toGame();
+				
+				// readies you up for now
+				if (!blnS) {
+					if (themenu.selected!=-1) {
+						ssm.sendText("choose"+strSep+themenu.selected);
+						ssm.sendText("ready");
+					}
+				} else {
+					if (themenu.selected!=-1) {
+						locked[0] = true;
+						chars[0] = themenu.selected;
+						ssm.sendText("choose"+strSep+themenu.selected);
+						System.out.println(locked[0] +" "+locked[1]);
+						this.toGame();
+					}
+				}
 			} 
 			if (evt.getKeyChar()=='w' || evt.getKeyChar()=='W') {
 				themenu.defY = -5;
@@ -227,10 +219,63 @@ public class AllOutScrap implements ActionListener,WindowListener, KeyListener, 
 	}
 	
 	public static void toGame() {
-		theframe.setContentPane(game);
-		theframe.pack();
-		inGame = true;
+		if (locked[1]&&locked[0]&&blnS) {
+			theframe.setContentPane(game);
+			theframe.pack();
+			inGame = true;
+			ssm.sendText("startGame");
+			
+			// load character hitboxes into game
+			System.out.println(chars[0]+" "+chars[1]);
+			for (int i=0;i<4;i++) for (int j=0;j<4;j++) game.hbxH[i][j] = Integer.parseInt(hbxes[chars[0]+i][j]); 
+			for (int i=0;i<4;i++) for (int j=0;j<4;j++) game.hbxC[i][j] = Integer.parseInt(hbxes[chars[1]+i][j]); 
+			game.fighter.y = 720-game.hbxH[chars[0]][1];
+			game.dummy.y = 720-game.hbxH[chars[1]][1];
+		} else if (!blnS) {
+			theframe.setContentPane(game);
+			theframe.pack();
+			inGame = true;
+		}
 	}
+	
+	public static void makeServer() {
+		ssm = new SuperSocketMaster(9112, new ActionListener () {
+			@Override
+			public void actionPerformed(ActionEvent e) {
+				String[] strMess = ssm.readText().split(strSep);
+				if (strMess[0].equals("ready")) {
+					locked[1] = true;
+					toGame();
+				} else if (strMess[0].equals("attack")) {
+					
+				} else if (strMess[0].equals("connect")) {
+					
+				} else if (strMess[0].equals("sendName")) {
+					
+				} else if (strMess[0].equals("chat")) {
+					
+				} else if (strMess[0].equals("choose")) {
+					if (blnS) chars[1] = Integer.parseInt(strMess[1]);
+				} else if (strMess[0].equals("disconnect")) {
+					
+				} 
+			}
+		});
+		ssm.connect();
+	}
+	
+	public static void makeClient(String strHost) {
+		ssm = new SuperSocketMaster(strHost, 9112, new ActionListener () {
+			@Override
+			public void actionPerformed(ActionEvent e) {
+				String[] strMess = ssm.readText().split(strSep);
+				if (strMess[0].equals("startGame")) {
+					toGame();
+				}
+			}
+		});
+		ssm.connect();
+	} 
 	
 	//constructor
 	public AllOutScrap(){
@@ -245,12 +290,8 @@ public class AllOutScrap implements ActionListener,WindowListener, KeyListener, 
 		theframe.setDefaultCloseOperation(3);
 		theframe.setResizable(false);
 		theframe.setVisible(true);
-		stats = loader.CharStatsRender("CharacterStats.csv", 4, 4);
-		for (int i=0;i<4;i++) {
-			for (int j=0;j<4;j++) {
-				System.out.println(stats[i][j]);
-			}
-		}
+		statistics = loader.CharStatsRender("Basic Character Stats - Sheet1.csv", 4, 4);
+		hbxes = loader.CharStatsRender("Main Body Hitbox Stats - Sheet1.csv", 16, 4);
 	}
 	
 	//main method

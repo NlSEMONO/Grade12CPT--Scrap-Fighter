@@ -17,13 +17,35 @@ public class GamePanel extends JPanel implements ActionListener{
 	int atkTicks = 0, atkCd = 0, up;
 	double tme = 0;
 	boolean atking = false, left = false, jump = false, duck = false, deced = false;
+	int[][] hbxH = new int[4][4]; // server player hitboxes; row: 0 = idle, 1 - high attack, 2 - low attack, 3 - ult
+	int[][] hbxC = new int[4][4]; // client player hitboxes; row: 0 = idle, 1 - high attack, 2 - low attack, 3 - ult
+	int currHbxH;
+	int currHbxC = 0;
+	
 	Rectangle fighter = new Rectangle(300, 720-50, 50, 50);
-	Rectangle dummy = new Rectangle(700, 720-50, 50, 50);
+	Rectangle dummy = new Rectangle(700, 720-50, 50, 50); 
 	Rectangle[] atks = new Rectangle[2];
 	double vi = 200-phost.intpweight;
 	double accel = -350.5/2;
 	
 	public void paintComponent(Graphics g) {
+		// decide which hitbox to use
+		if (!atking) { // no attack = idle, even if moving
+			currHbxH = 0;
+		} else {
+			if (up==0) {
+				currHbxH = 1;
+			} else {
+				currHbxH = 2;
+			}
+		}
+		
+		fighter.width = hbxH[currHbxH][0];
+		fighter.height = hbxH[currHbxH][1];
+		
+		dummy.width = hbxH[currHbxC][0];
+		dummy.height = hbxH[currHbxC][1];
+		
 		// x axis movement
 		fighter.x += defX;
 		
@@ -71,7 +93,6 @@ public class GamePanel extends JPanel implements ActionListener{
 		g.fillRect(fighter.x, fighter.y, fighter.width, fighter.height);
 		
 		if (atking) {
-			System.out.println(atks[up].x + " " + atks[up].y + " " +atks[up].width+""+ atks[up].height);
 			if (atkTicks<10) {
 				g.setColor(Color.blue);
 				g.fillRect(atks[up].x, atks[up].y, atks[up].width, atks[up].height);

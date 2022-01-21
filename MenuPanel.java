@@ -48,9 +48,6 @@ public class MenuPanel extends JPanel implements ActionListener{
 	
 	//methods
 	public void actionPerformed(ActionEvent evt){
-		if (evt.getSource() == AllOutScrap.ssm){
-			
-		}
 		if (evt.getSource() == thetimer){
 			this.repaint();
 		}
@@ -165,7 +162,15 @@ public class MenuPanel extends JPanel implements ActionListener{
 			if (hovered!=-1) {
 				menudraw.drawImage(selectImg[0], 100+(200*(hovered%2))-(int)(pXDist*1.25), -935+(200*(hovered/2))-(int)(pYDist*1.25), null);
 			}
-		} 
+			
+			AllOutScrap.blnS = lastClick==0 ? true : false;
+			if (AllOutScrap.ssm==null) {
+				if (AllOutScrap.blnS) AllOutScrap.makeServer();
+				else AllOutScrap.makeClient("localhost"); 
+			} 
+		} else if (lastClick>=5&&lastClick<=8) {
+			AllOutScrap.ssm = null;
+		}
 		
 		//draw menu buttons
 		for (int i = 0; i<buttons.length; i++){
