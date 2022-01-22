@@ -85,8 +85,8 @@ public class MenuPanel extends JPanel implements ActionListener{
 		buttons[7].setLocation(2238-(int)(pXDist*1.5),600-(int)(pYDist*1.5));
 		buttons[8].setLocation(-1128-(int)(pXDist*1.5),600-(int)(pYDist*1.5));
 		
-		r.x += defX;
-		r.y+=defY;
+		r.x = Math.min(Math.max(r.x + defX,50),1230);
+		r.y = Math.min(Math.max(r.y + defY,50),620);
 		
 		// bottom middle button on main menu
 		if (lastClick==3) {
@@ -119,7 +119,7 @@ public class MenuPanel extends JPanel implements ActionListener{
 		} 
 		// bottom right on main menu
 		else if (lastClick==2) {
-			menudraw.drawImage(cred, 0, 0, null);
+			menudraw.drawImage(cred, -pXDist, 828-pYDist, null);
 		} 
 		
 		// bottom left on main menu
