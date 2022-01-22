@@ -7,7 +7,7 @@ public class Player{
 	//Properties
 	String strplayername; 	//Variable for player's name
 	int intpattack;			//Variable for character's attack damage
-	int intphealth;			//Variable for character's health
+	int intphealth;			//Variable for character's max health
 	int intpweight;			//Variable for character's weight 
 	int intpspeed;			//Variable for character's speed
 	int intchealth;			//Variable for character's current health

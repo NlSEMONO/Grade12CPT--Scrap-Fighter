@@ -76,13 +76,28 @@ public class AllOutScrap implements ActionListener,WindowListener, KeyListener, 
 			} 
 		} else {
 			if (evt.getKeyChar()=='a' || evt.getKeyChar()=='A') {
-				game.defX = 0;
-				game.left = true;
+				if (blnS) {
+					game.defX = 0;
+					game.left = true;
+				} else {
+					ssm.sendText("move"+strSep+"-1");
+					game.defX2 = 0;
+				}
 			} else if (evt.getKeyChar()=='s' || evt.getKeyChar()=='S') {
-				game.duck = false;
+				if (blnS) {
+					game.duck = false;
+				} else  {
+					ssm.sendText("move"+strSep+"-3");
+					game.duck2 = false;
+				}
 			} else if (evt.getKeyChar()=='d' || evt.getKeyChar()=='D') {
-				game.defX = 0;
-				game.left = false;
+				if (blnS) {
+					game.defX = 0;
+					game.left = false;
+				} else {
+					ssm.sendText("move"+strSep+"-4");
+					game.defX2 = 0;
+				}
 			} 
 		}
 	}
@@ -106,6 +121,7 @@ public class AllOutScrap implements ActionListener,WindowListener, KeyListener, 
 					if (themenu.selected!=-1) {
 						ssm.sendText("choose"+strSep+themenu.selected);
 						ssm.sendText("ready");
+						chars[1] = themenu.selected;
 					}
 				} else {
 					if (themenu.selected!=-1) {
@@ -145,26 +161,64 @@ public class AllOutScrap implements ActionListener,WindowListener, KeyListener, 
 			game.atking = false;
 			if (evt.getKeyChar()=='q'||evt.getKeyChar()=='Q') {
 				// high attack
-				if (game.atkCd<1) game.atking = true;
-				game.up = 0;
+				if (blnS) {
+					if (game.atkCd<1) game.atking = true;
+					game.up = 0;
+				} else {
+					if (game.atkCd2<1) {
+						game.atking2 = true;
+						ssm.sendText("attack"+strSep+game.up2);
+					}
+					game.up2 = 0; 
+				}
 			} else if (evt.getKeyChar()=='e'||evt.getKeyChar()=='E') {
 				// low attack
-				if (game.atkCd<1) game.atking = true;
-				game.up = 1;
+				if (blnS) {
+					if (game.atkCd<1) game.atking = true;
+					game.up = 1;
+				} else {
+					if (game.atkCd2<1) {
+						game.atking2 = true;
+						ssm.sendText("attack"+strSep+game.up2);
+					}
+					game.up2 = 1; 
+				} 
+				
 			} else if (evt.getKeyChar()==' ') {
 				// ult 
 				
 			} 
 			if (evt.getKeyChar()=='w' || evt.getKeyChar()=='W') {
-				game.jump = true;
+				if (blnS) game.jump = true;
+				else {
+					ssm.sendText("move"+strSep+"2");
+					game.jump2 = true;
+				}
 			} else if (evt.getKeyChar()=='a' || evt.getKeyChar()=='A') {
-				game.defX = -5;
-				game.left = true;
+				if (blnS) {
+					game.defX = -5;
+					game.left = true;
+				} else {
+					ssm.sendText("move"+strSep+"1");
+					game.defX2 = -5;
+					game.left2 = true;
+				}
 			} else if (evt.getKeyChar()=='s' || evt.getKeyChar()=='S') {
-				game.duck = true;
+				if (blnS) {
+					game.duck = true;
+				} else {
+					game.duck2 = true;
+					ssm.sendText("move"+strSep+"3");
+				}
 			} else if (evt.getKeyChar()=='d' || evt.getKeyChar()=='D') {
-				game.defX = 5;
-				game.left = false;
+				if (blnS){
+					game.defX = 5;
+					game.left = false;
+				} else {
+					ssm.sendText("move"+strSep+"4");
+					game.defX2 = 5;
+					game.left2 = false;
+				}
 			} 
 			
 			
@@ -215,6 +269,7 @@ public class AllOutScrap implements ActionListener,WindowListener, KeyListener, 
 			theframe.setContentPane(game);
 			theframe.pack();
 			inGame = true;
+			ssm.sendText("choose"+strSep+chars[0]);
 			ssm.sendText("startGame");
 			
 			// load character hitboxes into game
@@ -228,7 +283,30 @@ public class AllOutScrap implements ActionListener,WindowListener, KeyListener, 
 			theframe.setContentPane(game);
 			theframe.pack();
 			inGame = true;
+			for (int i=0;i<4;i++) for (int j=0;j<4;j++) game.hbxH[i][j] = Integer.parseInt(hbxes[4*chars[0]+i][j]); 
+			for (int i=0;i<4;i++) for (int j=0;j<4;j++) game.hbxC[i][j] = Integer.parseInt(hbxes[4*chars[1]+i][j]); 
+			for (int i=0;i<3;i++) for (int j=0;j<4;j++) game.atkhbxH[i][j] = Integer.parseInt(atkhbxes[3*chars[0]+i][j]); 
+			for (int i=0;i<3;i++) for (int j=0;j<4;j++) game.atkhbxC[i][j] = Integer.parseInt(atkhbxes[3*chars[1]+i][j]); 
 		}
+	}
+	
+	public static void sendUpdate() {
+		int left = game.left ? 1 : 0;
+		int jump = game.jump ? 1 : 0;
+		int duck = game.duck ? 1 : 0;
+		ssm.sendText("update"+ 
+					strSep+game.backs[0].x+ 
+					strSep+game.backs[0].y+
+					strSep+game.backs[1].x+
+					strSep+game.backs[1].y+
+					strSep+game.phost.intchealth+
+					strSep+game.phost.intcenergy+
+					strSep+game.pclient.intchealth+
+					strSep+game.pclient.intcenergy+
+					strSep+left+
+					strSep+jump+
+					strSep+duck);
+		if (game.atking) ssm.sendText("attack"+strSep+game.up);
 	}
 	
 	public static void makeServer() {
@@ -239,19 +317,31 @@ public class AllOutScrap implements ActionListener,WindowListener, KeyListener, 
 				if (strMess[0].equals("ready")) {
 					locked[1] = true;
 					toGame();
-				} else if (strMess[0].equals("attack")) {
-					
-				} else if (strMess[0].equals("connect")) {
-					
-				} else if (strMess[0].equals("sendName")) {
-					
-				} else if (strMess[0].equals("chat")) {
-					
+				} else if (strMess[0].equals("move")) {
+					int function = Integer.parseInt(strMess[1]);
+					if (function==1) {
+						game.defX2 = -5;
+						game.left2 = true;
+					} else if (function==2) {
+						game.jump2 = true;
+					} else if (function==3) {
+						game.duck2 = true;
+					} else if (function==4) {
+						game.defX2 = 5;
+						game.left2 = false;
+					} else if (function==-1||function==-4) {
+						game.defX2 = 0;
+					} else if (function==-3) {
+						game.duck2 = false;
+					}
 				} else if (strMess[0].equals("choose")) {
-					if (blnS) chars[1] = Integer.parseInt(strMess[1]);
+					chars[1] = Integer.parseInt(strMess[1]);
 				} else if (strMess[0].equals("disconnect")) {
 					
-				} 
+				} else if (strMess[0].equals("attack")) {
+					game.atking2 = true;
+					game.up2 = Integer.parseInt(strMess[1]);
+				}
 			}
 		});
 		ssm.connect();
@@ -264,6 +354,26 @@ public class AllOutScrap implements ActionListener,WindowListener, KeyListener, 
 				String[] strMess = ssm.readText().split(strSep);
 				if (strMess[0].equals("startGame")) {
 					toGame();
+				} else if (strMess[0].equals("update")) {
+					int[] data = new int[strMess.length];
+					for (int i=1;i<strMess.length;i++){
+						data[i] = Integer.parseInt(strMess[i]);
+					}
+					
+					game.jump = data[10]==0 ? false : true;
+					game.backs[0].x = data[1];
+					game.phost.intchealth = data[5];
+					game.phost.intcenergy = data[6];
+					game.pclient.intchealth = data[7];
+					game.pclient.intcenergy = data[8];
+					game.left = data[9]==0 ? false : true;
+					game.duck = data[11]==0 ? false : true;
+				} else if (strMess[0].equals("choose")) {
+					System.out.println(strMess[1]);
+					chars[0] = Integer.parseInt(strMess[1]);
+				} else if (strMess[0].equals("attack")) {
+					game.up = Integer.parseInt(strMess[1]);
+					game.atking = true;
 				}
 			}
 		});

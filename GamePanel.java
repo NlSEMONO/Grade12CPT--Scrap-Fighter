@@ -7,16 +7,17 @@ import javax.swing.event.*;
 import java.awt.event.*;
 
 public class GamePanel extends JPanel implements ActionListener{
-	Timer time = new Timer(1000/100, this);
+	Timer time = new Timer(1000/80, this);
 	ArrayList<Double> times = new ArrayList<>();
 	Color[] col = new Color[2];
 	Color backCol = Color.white;
 	Player phost = new Player("Keanu Reeves",25,150,75,5,100,50,0);
 	Player pclient = new Player("Eggs",10,100,50,10,100,50,0);
-	int defX = 0, defY = 0;
-	int atkTicks = 0, atkCd = 0, up;
-	double tme = 0;
-	boolean atking = false, left = false, jump = false, duck = false, deced = false;
+	int defX = 0, defX2 = 0;
+	int atkTicks = 0, atkCd = 0, up, up2, atkTicks2 = 0, atkCd2 = 0;
+	double tme = 0, tme2 = 0;
+	boolean atking = false, left = false, jump = false, duck = false;
+	boolean atking2 = false, left2 = true, jump2 = false, duck2 = false;
 	int[][] hbxH = new int[4][4]; // server player hitboxes; row: 0 = idle, 1 - high attack, 2 - low attack, 3 - ult
 	int[][] hbxC = new int[4][4]; // client player hitboxes; row: 0 = idle, 1 - high attack, 2 - low attack, 3 - ult
 	int[][] atkhbxH = new int[3][4]; // server attack hitboxes; 0 - high attack, 1 - low attack, 2 - ult
@@ -27,13 +28,13 @@ public class GamePanel extends JPanel implements ActionListener{
 	int currAtkH = 0;
 	int currAtkC = 0;
 	
-	
 	Rectangle[] backs = new Rectangle[2];
 	Rectangle fighter = new Rectangle(300, 720-50, 50, 50);
 	Rectangle dummy = new Rectangle(700, 720-50, 50, 50); 
 	Rectangle[] atks = new Rectangle[2];
-	double vi = 200-phost.intpweight;
-	double accel = -350.5/2;
+	Rectangle[] atks2 = new Rectangle[2];
+	double vi = 29.6;
+	double accel = -2.2;
 	
 	public void paintComponent(Graphics g) {
 		// background
@@ -52,6 +53,18 @@ public class GamePanel extends JPanel implements ActionListener{
 			}
 		} 
 		
+		if (!atking2) { // no attack = idle, even if moving
+			currHbxC = 0;
+		} else {
+			if (up2==0) {
+				currHbxC = 1;
+				currAtkC = 0;
+			} else {
+				currHbxC = 2;
+				currAtkC = 1;
+			}
+		} 
+		
 		// change hitbox based on what player is doing
 		fighter.width = hbxH[currHbxH][0];
 		fighter.height = hbxH[currHbxH][1];
@@ -59,22 +72,38 @@ public class GamePanel extends JPanel implements ActionListener{
 		dummy.width = hbxC[currHbxC][0];
 		dummy.height = hbxC[currHbxC][1];
 		
-		// make the fighter touch the floor based on new height
+		// make the fighter and dummy touch the floor based on new height
 		backs[0].y = 720-backs[0].height;
-		backs[1].y = 720-backs[1].height;
+		backs[1].y = 720-backs[1].height; 
 		
 		// x axis movement
-		backs[0].x += defX;
+		if (backs[0].x+defX>=0&&backs[0].x+defX<=1280-256){
+			backs[0].x += defX;
+		}
+		if (backs[1].x+defX2>=0&&backs[1].x+defX2<=1280-256){
+			backs[1].x += defX2;
+		}
+		
 		
 		// jumping
 		if (jump) {
-			backs[0].y = (720-fighter.height)-Math.min((int)(((vi*tme)+(accel*tme*tme))*1.6), 50);
+			backs[0].y = (720-backs[0].height)-((int)((vi*tme)+(accel*tme*tme)));
 			if (backs[0].y+backs[0].height > 720) {
 				backs[0].y = 720-backs[0].height;
 				jump = false;
-				tme = -0.02;
+				tme = -0.5;
 			}
-			tme+=0.02;
+			tme+=0.5;
+		}
+		
+		if (jump2) {
+			backs[1].y = (720-backs[1].height)-((int)((vi*tme)+(accel*tme*tme)));
+			if (backs[1].y+backs[1].height > 720) {
+				backs[1].y = 720-backs[1].height;
+				jump2 = false;
+				tme = -0.5;
+			}
+			tme+=0.5;
 		}
 		
 		g.setColor(Color.green);
@@ -82,16 +111,32 @@ public class GamePanel extends JPanel implements ActionListener{
 		g.fillRect(backs[1].x, backs[1].y, 256, 256);
 		
 		// change hitbox x and y based on where the images are
-		fighter.x = backs[0].x+hbxH[currHbxH][2];
-		fighter.y = backs[0].y+hbxH[currHbxH][3];
+		if (left) {
+			fighter.x = backs[0].x+backs[0].width-hbxH[currHbxH][2]-fighter.width;
+			
+		} else {
+			fighter.x = backs[0].x+hbxH[currHbxH][2];
+		}
 		
-		dummy.x = backs[1].x+hbxC[currHbxC][2];
+		if (left2) {
+			dummy.x = backs[1].x+backs[1].width-hbxC[currHbxC][2]-dummy.width;
+		} else {
+			dummy.x = backs[1].x+hbxC[currHbxC][2];
+		}
+			
+		
+		fighter.y = backs[0].y+hbxH[currHbxH][3];
 		dummy.y = backs[1].y+hbxC[currHbxC][3];
 		
 		// duck
 		if (duck) {
-			fighter.height /= fighter.height;
-			fighter.y = 720-((720-fighter.height));
+			fighter.height /= 2;
+			fighter.y = 720-fighter.height;
+		} 
+		
+		if (duck2) {
+			dummy.height /= 2;
+			dummy.y = 720-dummy.height;
 		} 
 		
 		// hp and energy
@@ -112,16 +157,37 @@ public class GamePanel extends JPanel implements ActionListener{
 		g.fillRect(fighter.x, fighter.y, fighter.width, fighter.height);
 		
 		// attack hitboxes
-		if (!left) {
-			atks[0].x = backs[0].x+atkhbxH[currAtkH][2];
-			atks[1].x = backs[0].x+atkhbxH[currAtkH][2];
-		}
 		atks[0].width = atkhbxH[currAtkH][0];
 		atks[0].height = atkhbxH[currAtkH][1];
 		atks[1].width = atkhbxH[currAtkH][0];
 		atks[1].height = atkhbxH[currAtkH][1];
 		atks[0].y = backs[0].y+atkhbxH[currAtkH][3];
 		atks[1].y = backs[0].y+atkhbxH[currAtkH][3];
+		
+		atks2[0].width = atkhbxC[currAtkC][0];
+		atks2[0].height = atkhbxC[currAtkC][1];
+		atks2[1].width = atkhbxC[currAtkC][0];
+		atks2[1].height = atkhbxC[currAtkC][1];
+		atks2[0].y = backs[1].y+atkhbxC[currAtkC][3];
+		atks2[1].y = backs[1].y+atkhbxC[currAtkC][3];
+		
+		if (!left) {
+			atks[0].x = backs[0].x+atkhbxH[currAtkH][2];
+			atks[1].x = backs[0].x+atkhbxH[currAtkH][2];
+		} else {
+			atks[0].x = backs[0].x+backs[0].width-atkhbxH[currAtkH][2]-atks[0].width;
+			atks[1].x = backs[0].x+backs[0].width-atkhbxH[currAtkH][2]-atks[1].width;
+			
+			
+		}
+		
+		if (left2) {
+			atks2[0].x = backs[1].x+backs[1].width-atkhbxC[currAtkC][2]-atks2[0].width;
+			atks2[1].x = backs[1].x+backs[1].width-atkhbxC[currAtkC][2]-atks2[1].width;
+		} else {
+			atks2[0].x = backs[1].x+atkhbxC[currAtkC][2];
+			atks2[1].x = backs[1].x+atkhbxC[currAtkC][2];
+		}
 		
 		if (atking) {
 			if (atkTicks<10) {
@@ -136,6 +202,22 @@ public class GamePanel extends JPanel implements ActionListener{
 		} else if (atkCd>0) {
 			atkCd--;
 		}
+		
+		if (atking2) {
+			if (atkTicks2<10) {
+				g.setColor(Color.blue);
+				g.fillRect(atks2[up2].x, atks2[up2].y, atks2[up2].width, atks2[up2].height);
+			} else if (atkTicks2==10) {
+				atkTicks2=-1;
+				atking2 = false;
+				atkCd2=40;
+			}
+			atkTicks2++;
+		} else if (atkCd2>0) {
+			atkCd2--;
+		}
+		
+		if (AllOutScrap.blnS&&AllOutScrap.ssm!=null) AllOutScrap.sendUpdate();
 	}
 	
 	public void loadData(String[][] data) {
@@ -151,6 +233,8 @@ public class GamePanel extends JPanel implements ActionListener{
 		backs[1] = new Rectangle(1280-256, 720-256, 256, 256);
 		atks[0] = new Rectangle(0, 0, 0, 0);
 		atks[1] = new Rectangle(0, 0, 0, 0);
+		atks2[0] = new Rectangle(0, 0, 0, 0);
+		atks2[1] = new Rectangle(0, 0, 0, 0);
 	}
 
 	@Override
