@@ -12,6 +12,7 @@ public class MenuPanel extends JPanel implements ActionListener{
 	BufferedImage menuscreen = new BufferedImage(1280,720,BufferedImage.TYPE_INT_RGB);
 	Graphics menudraw = menuscreen.getGraphics();
 	BufferedImage cred;
+	BufferedImage helpscreenbg;
 	BufferedImage[] selectImg = new BufferedImage[3]; 
 	
 	//combine mouse x and y into one point
@@ -91,13 +92,12 @@ public class MenuPanel extends JPanel implements ActionListener{
 		// bottom middle button on main menu
 		if (lastClick==3) {
 			// dummy hitbox
+			menudraw.drawImage(helpscreenbg, 1472-pXDist, 0-pYDist, null);
 			menudraw.setColor(Color.red);
 			menudraw.fillRect(dummy.x+1472-pXDist, dummy.y-pYDist, dummy.width, dummy.height);
 			// training fighter hitbox
 			menudraw.setColor(Color.black);
 			menudraw.fillRect(r.x+1472-pXDist, r.y-pYDist, r.width, r.height);
-			menudraw.drawString("Q - High attack", 1772-pXDist, 50-pYDist);
-			menudraw.drawString("E - Low attack", 2200-pXDist, 50-pYDist);
 			if (atking) {
 				if (atkTicks<10) {
 					if (left) {
@@ -228,7 +228,7 @@ public class MenuPanel extends JPanel implements ActionListener{
 		atks[1] = new Rectangle(r.x+10, r.y+25, 50, 25);
 		
 		cred = img("ScrapFighter-CreditsImage.png");
-		
+		helpscreenbg = img("SFHelpScreenBG.jpg");	
 		// hover, other player's selection, your selection
 		selectImg[0] = img("hover.png");
 		selectImg[1] = img("otherselect.png");
