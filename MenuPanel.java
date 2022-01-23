@@ -15,6 +15,13 @@ public class MenuPanel extends JPanel implements ActionListener{
 	BufferedImage helpscreenbg;
 	BufferedImage[] selectImg = new BufferedImage[3]; 
 	
+	JTextField usernamefield = new JTextField("Username Goes Here");
+	
+	JTextField ipfield = new JTextField("127.0.0.1");
+	JTextField portfield = new JTextField("9112");
+	
+	JTextField chatfield = new JTextField("Chat Text Goes Here");
+	
 	//combine mouse x and y into one point
 	Point mousePos = new Point(640,360);
 	int pXDtarg = 0;
@@ -45,7 +52,9 @@ public class MenuPanel extends JPanel implements ActionListener{
 	int atkTicks = 0;
 	int atkCd = 0;
 	
-	phButt[] buttons = new phButt[9];
+	phButt[] buttons = new phButt[15];
+	
+	
 	
 	//methods
 	public void actionPerformed(ActionEvent evt){
@@ -86,6 +95,13 @@ public class MenuPanel extends JPanel implements ActionListener{
 		buttons[7].setLocation(2238-(int)(pXDist*1.5),600-(int)(pYDist*1.5));
 		buttons[8].setLocation(-1128-(int)(pXDist*1.5),600-(int)(pYDist*1.5));
 		
+		buttons[9].setLocation(-1128-(int)(pXDist*1.5),600-(int)(pYDist*1.5));
+		buttons[10].setLocation(-1128-(int)(pXDist*1.5),600-(int)(pYDist*1.5));
+		buttons[11].setLocation(-1128-(int)(pXDist*1.5),600-(int)(pYDist*1.5));
+		buttons[12].setLocation(-1128-(int)(pXDist*1.5),600-(int)(pYDist*1.5));
+		buttons[13].setLocation(-1128-(int)(pXDist*1.5),600-(int)(pYDist*1.5));
+		buttons[14].setLocation(-1128-(int)(pXDist*1.5),600-(int)(pYDist*1.5));
+		
 		r.x = Math.min(Math.max(r.x + defX,50),1230);
 		r.y = Math.min(Math.max(r.y + defY,50),620);
 		
@@ -97,7 +113,8 @@ public class MenuPanel extends JPanel implements ActionListener{
 			menudraw.fillRect(dummy.x+1472-pXDist, dummy.y-pYDist, dummy.width, dummy.height);
 			// training fighter hitbox
 			menudraw.setColor(Color.black);
-			menudraw.fillRect(r.x+1472-pXDist, r.y-pYDist, r.width, r.height);
+			menudraw.fillRect(r.x+1472-pXDist, r.y-pYDist + 50, r.width, r.height);
+			
 			if (atking) {
 				if (atkTicks<10) {
 					if (left) {
@@ -155,6 +172,8 @@ public class MenuPanel extends JPanel implements ActionListener{
 				menudraw.drawImage(select[i].drawme,(int)select[i].getX(),(int)select[i].getY(),null);
 			}
 			
+			
+			
 			// if a selection/hover has been made, draw the appropriate image
 			if (selected!=-1) {
 				menudraw.drawImage(selectImg[2], 100+(200*(selected%2))-(int)(pXDist*1.25), -935+(200*(selected/2))-(int)(pYDist*1.25), null);
@@ -168,9 +187,17 @@ public class MenuPanel extends JPanel implements ActionListener{
 				if (AllOutScrap.blnS) AllOutScrap.makeServer();
 				else AllOutScrap.makeClient("localhost"); 
 			} 
+			
+			
+			
+			
+			
+			
 		} else if (lastClick>=5&&lastClick<=8) {
 			AllOutScrap.ssm = null;
 		}
+		
+		
 		
 		//draw menu buttons
 		for (int i = 0; i<buttons.length; i++){
@@ -204,6 +231,9 @@ public class MenuPanel extends JPanel implements ActionListener{
 		thetimer.start();
 		menudraw.setFont(new Font("Small Fonts",Font.PLAIN,30));
 		
+		setLayout(null);
+		setPreferredSize(new Dimension(1280,720));
+		
 		//switch to menu buttons
 		buttons[0] = new phButt(0,0,480,130,0,828,"b1def.png","b1hov.png","b1prs.png");
 		buttons[1] = new phButt(0,0,480,130,0,828,"b1def.png","b1hov.png","b1prs.png");
@@ -222,6 +252,31 @@ public class MenuPanel extends JPanel implements ActionListener{
 			select[i] = new phButt(0, 0, 200, 200,0,828,"f"+i+"def.jpg","f"+i+"def.jpg","f"+i+"def.jpg");
 		}
 		
+		buttons[9] = new phButt(0,0,170,90,0,0,"b1def.png","b1hov.png","b1prs.png"); 	//readyupbutton
+		buttons[10] = new phButt(0,0,170,90,0,0,"b1def.png","b1hov.png","b1prs.png"); 	//colorbutton
+		
+		buttons[11] = new phButt(0,0,170,90,0,0,"b1def.png","b1hov.png","b1prs.png"); 	//croombutton
+		buttons[12] = new phButt(0,0,170,90,0,0,"b1def.png","b1hov.png","b1prs.png"); 	//jroombutton
+		buttons[13] = new phButt(0,0,170,90,0,0,"b1def.png","b1hov.png","b1prs.png");	//lroombutton 
+
+		buttons[14] = new phButt(0,0,170,90,0,0,"b1def.png","b1hov.png","b1prs.png");	//sendbutton 
+	
+		
+		ipfield.setSize(400,50);
+		//ipfield.setHorizontalAlignment(JTextField.CENTER);
+		ipfield.setEditable(false);
+		ipfield.setVisible(false);
+		add(ipfield);
+		
+		
+		chatfield.setSize(400,50);
+		//portfield.setHorizontalAlignment(JTextField.CENTER);
+		chatfield.setEditable(false);
+		chatfield.setVisible(false);
+		add(chatfield);
+		
+		AllOutScrap.theframe.requestFocus();
+		
 		// high atk
 		atks[0] = new Rectangle(r.x+10, r.y, 50, 25);
 		// low atk
@@ -233,6 +288,8 @@ public class MenuPanel extends JPanel implements ActionListener{
 		selectImg[0] = img("hover.png");
 		selectImg[1] = img("otherselect.png");
 		selectImg[2] = img("select.png");
+		
+		
 		
 	}
 }
