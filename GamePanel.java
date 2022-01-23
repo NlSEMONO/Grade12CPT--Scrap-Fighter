@@ -7,7 +7,7 @@ import javax.swing.event.*;
 import java.awt.event.*;
 
 public class GamePanel extends JPanel implements ActionListener{
-	Timer time = new Timer(1000/80, this);
+	Timer time = new Timer(1000/60, this);
 	ArrayList<Double> times = new ArrayList<>();
 	Color[] col = new Color[2];
 	Color backCol = Color.white;
@@ -35,6 +35,15 @@ public class GamePanel extends JPanel implements ActionListener{
 	Rectangle[] atks2 = new Rectangle[2];
 	double vi = 29.6;
 	double accel = -2.2;
+	
+	int chatTicks = 0;
+	
+	JTextArea chat = new JTextArea();
+	JScrollPane scr = new JScrollPane(chat);
+	JTextField mess = new JTextField();
+	
+	String chatText = "";
+	String strSep = AllOutScrap.strSep;
 	
 	public void paintComponent(Graphics g) {
 		// background
@@ -226,6 +235,8 @@ public class GamePanel extends JPanel implements ActionListener{
 	
 	public GamePanel() {
 		super();
+		setLayout(null);
+		setPreferredSize(new Dimension(1280, 720));
 		col[0] = Color.red;
 		col[1] = Color.blue;
 		time.start();
@@ -235,13 +246,38 @@ public class GamePanel extends JPanel implements ActionListener{
 		atks[1] = new Rectangle(0, 0, 0, 0);
 		atks2[0] = new Rectangle(0, 0, 0, 0);
 		atks2[1] = new Rectangle(0, 0, 0, 0);
+		
+		scr.setLocation(0, 100);
+		scr.setSize(300, 300);
+		add(scr);
+		
+		mess.setLocation(0, 400);
+		mess.setSize(300, 50);
+		add(mess);
+		
+		mess.addActionListener(this); 
+		
+		chat.setEditable(false);
+		chat.setLineWrap(true);
+		scr.setVisible(false);
+		mess.setVisible(false);
 	}
 
 	@Override
 	public void actionPerformed(ActionEvent e) {
 		if (e.getSource()==time) {
 			this.repaint();
-			
+			if (!mess.isVisible()) chatTicks++;
+			// chat stays for 5 seconds if you don't type
+			if (chatTicks*time.getDelay()>=5000) scr.setVisible(false);
+		} else if (e.getSource()==mess&&!mess.getText().equals("")) {
+			chatTicks = 0;
+			chatText = AllOutScrap.blnS ? phost.strplayername : pclient.strplayername;
+			chat.append(chatText+": "+mess.getText()+"\n");
+			mess.setVisible(false);
+			AllOutScrap.theframe.requestFocus();
+			AllOutScrap.ssm.sendText("chat"+strSep+chatText+strSep+mess.getText());
+			mess.setText("");
 		}
 		
 	}

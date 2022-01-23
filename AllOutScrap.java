@@ -12,13 +12,12 @@ public class AllOutScrap implements ActionListener,WindowListener, KeyListener, 
 	//
 	
 	//properties
-	
+	static String strSep = "6b9";
 	static JFrame theframe = new JFrame ("All Out Scrap!");
 	static MenuPanel themenu = new MenuPanel();
 	static SuperSocketMaster ssm;
 	static GamePanel game = new GamePanel();
 	static int pCount = 0;
-	static String strSep = "6b9";
 	static SFCharStatsRender loader = new SFCharStatsRender();
 	static String[][] statistics;
 	static String[][] hbxes;
@@ -221,6 +220,15 @@ public class AllOutScrap implements ActionListener,WindowListener, KeyListener, 
 				}
 			} 
 			
+			if (evt.getKeyCode()==10) {
+				if (!game.mess.isVisible()) {
+					game.chatTicks = 0;
+					game.mess.setVisible(true);
+					game.scr.setVisible(true);
+					game.mess.requestFocus();
+				}
+			}
+			
 			
 			if (game.atking&&game.atks[game.up].intersects(game.dummy)&&game.atkTicks==0&&game.atkCd<1) {
 				System.out.println("OUCH!");
@@ -341,6 +349,12 @@ public class AllOutScrap implements ActionListener,WindowListener, KeyListener, 
 				} else if (strMess[0].equals("attack")) {
 					game.atking2 = true;
 					game.up2 = Integer.parseInt(strMess[1]);
+				} else if (strMess[0].equals("chat")) {
+					if (inGame) {
+						game.chat.append(strMess[1]+": "+strMess[2]+"\n");
+						game.scr.setVisible(true);
+						game.chatTicks=0;
+					}
 				}
 			}
 		});
@@ -374,6 +388,12 @@ public class AllOutScrap implements ActionListener,WindowListener, KeyListener, 
 				} else if (strMess[0].equals("attack")) {
 					game.up = Integer.parseInt(strMess[1]);
 					game.atking = true;
+				}  else if (strMess[0].equals("chat")) {
+					if (inGame) {
+						game.chat.append(strMess[1]+": "+strMess[2]+"\n");
+						game.scr.setVisible(true);
+						game.chatTicks=0;
+					}
 				}
 			}
 		});
