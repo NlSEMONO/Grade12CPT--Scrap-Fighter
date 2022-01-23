@@ -1,5 +1,5 @@
 attack,health,weight,speed,
-3,3,3,4,(MoBy)
-1,1,2,5,(Luz)
-1,1,1,6,(Skorp)
-2,2,2,5,(Amelia)
+15,125,45,4,(MoBy)
+5,75,40,6,(Luz)
+5,75,35,8,(Skorp)
+10,100,40,6,(Amelia)

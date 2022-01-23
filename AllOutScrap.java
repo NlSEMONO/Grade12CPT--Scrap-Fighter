@@ -287,6 +287,17 @@ public class AllOutScrap implements ActionListener,WindowListener, KeyListener, 
 			for (int i=0;i<3;i++) for (int j=0;j<4;j++) game.atkhbxH[i][j] = Integer.parseInt(atkhbxes[3*chars[0]+i][j]); 
 			for (int i=0;i<3;i++) for (int j=0;j<4;j++) game.atkhbxC[i][j] = Integer.parseInt(atkhbxes[3*chars[1]+i][j]); 
 			
+			// load character stats into player class
+			game.phost.intpattack = Integer.parseInt(statistics[chars[0]][0]);
+			game.phost.intphealth = Integer.parseInt(statistics[chars[0]][1]);
+			game.phost.intpweight = Integer.parseInt(statistics[chars[0]][2]);
+			game.phost.intpspeed = Integer.parseInt(statistics[chars[0]][3]);
+			
+			game.pclient.intpattack = Integer.parseInt(statistics[chars[1]][0]);
+			game.pclient.intphealth = Integer.parseInt(statistics[chars[1]][1]);
+			game.pclient.intpweight = Integer.parseInt(statistics[chars[1]][2]);
+			game.pclient.intpspeed = Integer.parseInt(statistics[chars[1]][3]);
+			
 		} else if (!blnS) {
 			theframe.setContentPane(game);
 			theframe.pack();
