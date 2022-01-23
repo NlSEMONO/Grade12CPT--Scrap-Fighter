@@ -28,6 +28,8 @@ public class GamePanel extends JPanel implements ActionListener{
 	int currAtkH = 0;
 	int currAtkC = 0;
 	
+	int jumpCd = 0, jumpCd2 = 0;
+	
 	Rectangle[] backs = new Rectangle[2];
 	Rectangle fighter = new Rectangle(300, 720-50, 50, 50);
 	Rectangle dummy = new Rectangle(700, 720-50, 50, 50); 
@@ -68,12 +70,12 @@ public class GamePanel extends JPanel implements ActionListener{
 			if (up2==0) {
 				currHbxC = 1;
 				currAtkC = 0;
-			} else {
+			} else {	
 				currHbxC = 2;
 				currAtkC = 1;
 			}
 		} 
-		
+				
 		// change hitbox based on what player is doing
 		fighter.width = hbxH[currHbxH][0];
 		fighter.height = hbxH[currHbxH][1];
@@ -84,6 +86,9 @@ public class GamePanel extends JPanel implements ActionListener{
 		// make the fighter and dummy touch the floor based on new height
 		backs[0].y = 720-backs[0].height;
 		backs[1].y = 720-backs[1].height; 
+		
+		if (defX!=0) defX = defX > 0 ? phost.intpspeed : phost.intpspeed*-1; 
+		if (defX2!=0) defX2 = defX2 > 0 ? pclient.intpspeed : pclient.intpspeed*-1; 
 		
 		// x axis movement
 		if (backs[0].x+defX>=0&&backs[0].x+defX<=1280-256){
@@ -101,18 +106,24 @@ public class GamePanel extends JPanel implements ActionListener{
 				backs[0].y = 720-backs[0].height;
 				jump = false;
 				tme = -0.5;
+				jumpCd = 30;
 			}
 			tme+=0.5;
+		}else if (jumpCd>0) {
+			jumpCd--;
 		}
 		
 		if (jump2) {
-			backs[1].y = (720-backs[1].height)-((int)((vi*tme)+(accel*tme*tme)));
+			backs[1].y = (720-backs[1].height)-((int)((vi*tme2)+(accel*tme2*tme2)));
 			if (backs[1].y+backs[1].height > 720) {
 				backs[1].y = 720-backs[1].height;
 				jump2 = false;
-				tme = -0.5;
+				tme2 = -0.5;
+				jumpCd2 = 30;
 			}
-			tme+=0.5;
+			tme2+=0.5;
+		} else if (jumpCd2>0) {
+			jumpCd2--;
 		}
 		
 		g.setColor(Color.green);
@@ -186,8 +197,6 @@ public class GamePanel extends JPanel implements ActionListener{
 		} else {
 			atks[0].x = backs[0].x+backs[0].width-atkhbxH[currAtkH][2]-atks[0].width;
 			atks[1].x = backs[0].x+backs[0].width-atkhbxH[currAtkH][2]-atks[1].width;
-			
-			
 		}
 		
 		if (left2) {
@@ -227,6 +236,7 @@ public class GamePanel extends JPanel implements ActionListener{
 		}
 		
 		if (AllOutScrap.blnS&&AllOutScrap.ssm!=null) AllOutScrap.sendUpdate();
+		else AllOutScrap.move();
 	}
 	
 	public void loadData(String[][] data) {

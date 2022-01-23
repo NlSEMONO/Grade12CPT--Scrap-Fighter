@@ -29,7 +29,6 @@ public class AllOutScrap implements ActionListener,WindowListener, KeyListener, 
 	
 	//methods
 	public void actionPerformed(ActionEvent evt){
-		
 	}
 	
 	public void windowActivated(WindowEvent evt){
@@ -79,14 +78,12 @@ public class AllOutScrap implements ActionListener,WindowListener, KeyListener, 
 					game.defX = 0;
 					game.left = true;
 				} else {
-					ssm.sendText("move"+strSep+"-1");
 					game.defX2 = 0;
 				}
 			} else if (evt.getKeyChar()=='s' || evt.getKeyChar()=='S') {
 				if (blnS) {
 					game.duck = false;
 				} else  {
-					ssm.sendText("move"+strSep+"-3");
 					game.duck2 = false;
 				}
 			} else if (evt.getKeyChar()=='d' || evt.getKeyChar()=='D') {
@@ -94,7 +91,6 @@ public class AllOutScrap implements ActionListener,WindowListener, KeyListener, 
 					game.defX = 0;
 					game.left = false;
 				} else {
-					ssm.sendText("move"+strSep+"-4");
 					game.defX2 = 0;
 				}
 			} 
@@ -150,8 +146,8 @@ public class AllOutScrap implements ActionListener,WindowListener, KeyListener, 
 				themenu.atks[0].x = themenu.r.x+40;
 				themenu.atks[1].x = themenu.r.x+40;
 			}
-			themenu.atks[0].y = themenu.r.y;
-			themenu.atks[1].y = themenu.r.y+25;
+			themenu.atks[0].y = themenu.r.y+50;
+			themenu.atks[1].y = themenu.r.y+75;
 			//comment
 			if (themenu.atking&&themenu.atks[themenu.up].intersects(themenu.dummy)&&themenu.atkTicks==0&&themenu.atkCd<1) {
 				System.out.println("OUCH!");
@@ -188,37 +184,34 @@ public class AllOutScrap implements ActionListener,WindowListener, KeyListener, 
 				
 			} 
 			if (evt.getKeyChar()=='w' || evt.getKeyChar()=='W') {
-				if (blnS) game.jump = true;
-				else {
-					ssm.sendText("move"+strSep+"2");
-					game.jump2 = true;
-				}
-			} else if (evt.getKeyChar()=='a' || evt.getKeyChar()=='A') {
-				if (blnS) {
-					game.defX = -5;
-					game.left = true;
-				} else {
-					ssm.sendText("move"+strSep+"1");
-					game.defX2 = -5;
-					game.left2 = true;
-				}
-			} else if (evt.getKeyChar()=='s' || evt.getKeyChar()=='S') {
-				if (blnS) {
-					game.duck = true;
-				} else {
-					game.duck2 = true;
-					ssm.sendText("move"+strSep+"3");
-				}
-			} else if (evt.getKeyChar()=='d' || evt.getKeyChar()=='D') {
-				if (blnS){
-					game.defX = 5;
-					game.left = false;
-				} else {
-					ssm.sendText("move"+strSep+"4");
-					game.defX2 = 5;
-					game.left2 = false;
-				}
-			} 
+					if (blnS) {
+						if (game.jumpCd<1) game.jump = true;
+					} else {
+						if (game.jumpCd2<1) game.jump2 = true;
+					}
+				} else if (evt.getKeyChar()=='a' || evt.getKeyChar()=='A') {
+					if (blnS) {
+						game.defX = -5;
+						game.left = true;
+					} else {
+						game.defX2 = -5;
+						game.left2 = true;
+					}
+				} else if (evt.getKeyChar()=='s' || evt.getKeyChar()=='S') {
+					if (blnS) {
+						game.duck = true;
+					} else {
+						game.duck2 = true;
+					}
+				} else if (evt.getKeyChar()=='d' || evt.getKeyChar()=='D') {
+					if (blnS){
+						game.defX = 5;
+						game.left = false;
+					} else {
+						game.defX2 = 5;
+						game.left2 = false;
+					}
+				} 
 			
 			if (evt.getKeyCode()==10) {
 				if (!game.mess.isVisible()) {
@@ -287,17 +280,6 @@ public class AllOutScrap implements ActionListener,WindowListener, KeyListener, 
 			for (int i=0;i<3;i++) for (int j=0;j<4;j++) game.atkhbxH[i][j] = Integer.parseInt(atkhbxes[3*chars[0]+i][j]); 
 			for (int i=0;i<3;i++) for (int j=0;j<4;j++) game.atkhbxC[i][j] = Integer.parseInt(atkhbxes[3*chars[1]+i][j]); 
 			
-			// load character stats into player class
-			game.phost.intpattack = Integer.parseInt(statistics[chars[0]][0]);
-			game.phost.intphealth = Integer.parseInt(statistics[chars[0]][1]);
-			game.phost.intpweight = Integer.parseInt(statistics[chars[0]][2]);
-			game.phost.intpspeed = Integer.parseInt(statistics[chars[0]][3]);
-			
-			game.pclient.intpattack = Integer.parseInt(statistics[chars[1]][0]);
-			game.pclient.intphealth = Integer.parseInt(statistics[chars[1]][1]);
-			game.pclient.intpweight = Integer.parseInt(statistics[chars[1]][2]);
-			game.pclient.intpspeed = Integer.parseInt(statistics[chars[1]][3]);
-			
 		} else if (!blnS) {
 			theframe.setContentPane(game);
 			theframe.pack();
@@ -307,6 +289,17 @@ public class AllOutScrap implements ActionListener,WindowListener, KeyListener, 
 			for (int i=0;i<3;i++) for (int j=0;j<4;j++) game.atkhbxH[i][j] = Integer.parseInt(atkhbxes[3*chars[0]+i][j]); 
 			for (int i=0;i<3;i++) for (int j=0;j<4;j++) game.atkhbxC[i][j] = Integer.parseInt(atkhbxes[3*chars[1]+i][j]); 
 		}
+		
+		// load character stats into player class
+		game.phost.intpattack = Integer.parseInt(statistics[chars[0]][0]);
+		game.phost.intphealth = Integer.parseInt(statistics[chars[0]][1]);
+		game.phost.intpweight = Integer.parseInt(statistics[chars[0]][2]);
+		game.phost.intpspeed = Integer.parseInt(statistics[chars[0]][3]);
+		
+		game.pclient.intpattack = Integer.parseInt(statistics[chars[1]][0]);
+		game.pclient.intphealth = Integer.parseInt(statistics[chars[1]][1]);
+		game.pclient.intpweight = Integer.parseInt(statistics[chars[1]][2]);
+		game.pclient.intpspeed = Integer.parseInt(statistics[chars[1]][3]);
 	}
 	
 	public static void sendUpdate() {
@@ -328,6 +321,18 @@ public class AllOutScrap implements ActionListener,WindowListener, KeyListener, 
 		if (game.atking) ssm.sendText("attack"+strSep+game.up);
 	}
 	
+	public static void move() {
+		int left = game.left2 ? 1 : 0;
+		int jump = game.jump2 ? 1 : 0;
+		int duck = game.duck2 ? 1 : 0;
+		ssm.sendText("move"+
+					strSep+game.backs[1].x+
+					strSep+game.backs[1].y+
+					strSep+left+
+					strSep+jump+
+					strSep+duck);
+	}
+	
 	public static void makeServer() {
 		ssm = new SuperSocketMaster(9112, new ActionListener () {
 			@Override
@@ -337,22 +342,17 @@ public class AllOutScrap implements ActionListener,WindowListener, KeyListener, 
 					locked[1] = true;
 					toGame();
 				} else if (strMess[0].equals("move")) {
-					int function = Integer.parseInt(strMess[1]);
-					if (function==1) {
-						game.defX2 = -5;
-						game.left2 = true;
-					} else if (function==2) {
-						game.jump2 = true;
-					} else if (function==3) {
-						game.duck2 = true;
-					} else if (function==4) {
-						game.defX2 = 5;
-						game.left2 = false;
-					} else if (function==-1||function==-4) {
-						game.defX2 = 0;
-					} else if (function==-3) {
-						game.duck2 = false;
+					int[] data = new int[strMess.length];
+					for (int i=1;i<strMess.length;i++){
+						data[i] = Integer.parseInt(strMess[i]);
 					}
+					
+					game.backs[1].x = data[1];
+					game.backs[1].y = data[2];
+					game.left2 = data[3]==0 ? false : true;
+					game.duck2 = data[5]==0 ? false : true;
+					game.jump2 = data[4]==0 ? false : true;
+					if (!game.jump2) game.tme2 = 0;
 				} else if (strMess[0].equals("choose")) {
 					chars[1] = Integer.parseInt(strMess[1]);
 				} else if (strMess[0].equals("disconnect")) {
@@ -393,6 +393,8 @@ public class AllOutScrap implements ActionListener,WindowListener, KeyListener, 
 					game.pclient.intcenergy = data[8];
 					game.left = data[9]==0 ? false : true;
 					game.duck = data[11]==0 ? false : true;
+					
+					if (!game.jump) game.tme = 0;
 				} else if (strMess[0].equals("choose")) {
 					System.out.println(strMess[1]);
 					chars[0] = Integer.parseInt(strMess[1]);
