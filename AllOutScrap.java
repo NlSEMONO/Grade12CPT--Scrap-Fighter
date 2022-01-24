@@ -180,38 +180,45 @@ public class AllOutScrap implements ActionListener,WindowListener, KeyListener, 
 				} 
 				
 			} else if (evt.getKeyChar()==' ') {
-				// ult 
-				
-			} 
+				if (blnS) { 
+					if (game.phost.intcenergy==50) game.ult = true;
+				} else {
+					if (game.pclient.intcenergy==50) game.ult2 = true;
+				}
+			}
 			if (evt.getKeyChar()=='w' || evt.getKeyChar()=='W') {
 					if (blnS) {
-						if (game.jumpCd<1) game.jump = true;
+						if (game.jumpCd<1 && !game.duck) game.jump = true;
 					} else {
-						if (game.jumpCd2<1) game.jump2 = true;
+						if (game.jumpCd2<1 && !game.duck2) game.jump2 = true;
 					}
-				} else if (evt.getKeyChar()=='a' || evt.getKeyChar()=='A') {
-					if (blnS) {
-						game.defX = -5;
-						game.left = true;
-					} else {
-						game.defX2 = -5;
-						game.left2 = true;
-					}
-				} else if (evt.getKeyChar()=='s' || evt.getKeyChar()=='S') {
-					if (blnS) {
-						game.duck = true;
-					} else {
-						game.duck2 = true;
-					}
-				} else if (evt.getKeyChar()=='d' || evt.getKeyChar()=='D') {
-					if (blnS){
-						game.defX = 5;
-						game.left = false;
-					} else {
-						game.defX2 = 5;
-						game.left2 = false;
-					}
-				} 
+			} 
+			if (evt.getKeyChar()=='a' || evt.getKeyChar()=='A') {
+				if (blnS) {
+					game.defX = -5;
+					game.left = true;
+				} else {
+					game.defX2 = -5;
+					game.left2 = true;
+				}
+			} 
+			if (evt.getKeyChar()=='s' || evt.getKeyChar()=='S') {
+				if (blnS) {
+					game.duck = true;
+				} else {
+					game.duck2 = true;
+				}
+			} 
+			if (evt.getKeyChar()=='d' || evt.getKeyChar()=='D') {
+				if (blnS){
+					game.defX = 5;
+					game.left = false;
+				} else {
+					game.defX2 = 5;
+					game.left2 = false;
+				}
+			} 
+			
 			
 			if (evt.getKeyCode()==10) {
 				if (!game.mess.isVisible()) {
@@ -284,6 +291,8 @@ public class AllOutScrap implements ActionListener,WindowListener, KeyListener, 
 			theframe.setContentPane(game);
 			theframe.pack();
 			inGame = true;
+			
+			// hitboxes temporary for client side
 			for (int i=0;i<4;i++) for (int j=0;j<4;j++) game.hbxH[i][j] = Integer.parseInt(hbxes[4*chars[0]+i][j]); 
 			for (int i=0;i<4;i++) for (int j=0;j<4;j++) game.hbxC[i][j] = Integer.parseInt(hbxes[4*chars[1]+i][j]); 
 			for (int i=0;i<3;i++) for (int j=0;j<4;j++) game.atkhbxH[i][j] = Integer.parseInt(atkhbxes[3*chars[0]+i][j]); 
@@ -300,12 +309,18 @@ public class AllOutScrap implements ActionListener,WindowListener, KeyListener, 
 		game.pclient.intphealth = Integer.parseInt(statistics[chars[1]][1]);
 		game.pclient.intpweight = Integer.parseInt(statistics[chars[1]][2]);
 		game.pclient.intpspeed = Integer.parseInt(statistics[chars[1]][3]);
+		
+		game.phost.intchealth = game.phost.intphealth;
+		game.pclient.intchealth = game.pclient.intphealth;
+		game.phost.intcenergy = 0;
+		game.pclient.intcenergy = 0;
 	}
 	
 	public static void sendUpdate() {
 		int left = game.left ? 1 : 0;
 		int jump = game.jump ? 1 : 0;
 		int duck = game.duck ? 1 : 0;
+		int ult = game.ult ? 1 : 0;
 		ssm.sendText("update"+ 
 					strSep+game.backs[0].x+ 
 					strSep+game.backs[0].y+
@@ -317,7 +332,8 @@ public class AllOutScrap implements ActionListener,WindowListener, KeyListener, 
 					strSep+game.pclient.intcenergy+
 					strSep+left+
 					strSep+jump+
-					strSep+duck);
+					strSep+duck+
+					strSep+ult);
 		if (game.atking) ssm.sendText("attack"+strSep+game.up);
 	}
 	
@@ -325,12 +341,14 @@ public class AllOutScrap implements ActionListener,WindowListener, KeyListener, 
 		int left = game.left2 ? 1 : 0;
 		int jump = game.jump2 ? 1 : 0;
 		int duck = game.duck2 ? 1 : 0;
+		int ult = game.ult2 ? 1 : 0;
 		ssm.sendText("move"+
 					strSep+game.backs[1].x+
 					strSep+game.backs[1].y+
 					strSep+left+
 					strSep+jump+
-					strSep+duck);
+					strSep+duck+
+					strSep+ult);
 	}
 	
 	public static void makeServer() {
@@ -352,6 +370,7 @@ public class AllOutScrap implements ActionListener,WindowListener, KeyListener, 
 					game.left2 = data[3]==0 ? false : true;
 					game.duck2 = data[5]==0 ? false : true;
 					game.jump2 = data[4]==0 ? false : true;
+					game.ult2 = data[6]==0 ? false: true;
 					if (!game.jump2) game.tme2 = 0;
 				} else if (strMess[0].equals("choose")) {
 					chars[1] = Integer.parseInt(strMess[1]);
@@ -393,7 +412,7 @@ public class AllOutScrap implements ActionListener,WindowListener, KeyListener, 
 					game.pclient.intcenergy = data[8];
 					game.left = data[9]==0 ? false : true;
 					game.duck = data[11]==0 ? false : true;
-					
+					game.ult = data[12]==0 ? false: true;
 					if (!game.jump) game.tme = 0;
 				} else if (strMess[0].equals("choose")) {
 					System.out.println(strMess[1]);
@@ -407,6 +426,10 @@ public class AllOutScrap implements ActionListener,WindowListener, KeyListener, 
 						game.scr.setVisible(true);
 						game.chatTicks=0;
 					}
+				} else if (strMess[0].equals("knockback")) {
+					int type = Integer.parseInt(strMess[1]);
+					if (type==0) game.backs[1].x = game.fighter.x > game.dummy.x ? Math.max(0, game.backs[1].x-(1000/game.pclient.intpweight)) : Math.min(game.backs[1].x+(1000/game.pclient.intpweight), 1280-256);
+					else game.backs[1].x = game.fighter.x > game.dummy.x ? Math.max(0, game.backs[1].x-(3000/game.pclient.intpweight)) : Math.min(game.backs[1].x+(3000/game.pclient.intpweight), 1280-256);
 				}
 			}
 		});

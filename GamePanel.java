@@ -7,9 +7,9 @@ import javax.swing.event.*;
 import java.awt.event.*;
 
 public class GamePanel extends JPanel implements ActionListener{
-	Timer time = new Timer(1000/60, this);
+	Timer time = new Timer(1000/80, this);
 	ArrayList<Double> times = new ArrayList<>();
-	Color[] col = new Color[2];
+	Color[] col = new Color[3];
 	Color backCol = Color.white;
 	Player phost = new Player("Keanu Reeves",25,150,75,5,100,50,0);
 	Player pclient = new Player("Eggs",10,100,50,10,100,50,0);
@@ -18,6 +18,9 @@ public class GamePanel extends JPanel implements ActionListener{
 	double tme = 0, tme2 = 0;
 	boolean atking = false, left = false, jump = false, duck = false;
 	boolean atking2 = false, left2 = true, jump2 = false, duck2 = false;
+	boolean ult = false, ult2 = false;
+	int ultTicks = 0, ultTicks2 = 0;
+	
 	int[][] hbxH = new int[4][4]; // server player hitboxes; row: 0 = idle, 1 - high attack, 2 - low attack, 3 - ult
 	int[][] hbxC = new int[4][4]; // client player hitboxes; row: 0 = idle, 1 - high attack, 2 - low attack, 3 - ult
 	int[][] atkhbxH = new int[3][4]; // server attack hitboxes; 0 - high attack, 1 - low attack, 2 - ult
@@ -30,6 +33,7 @@ public class GamePanel extends JPanel implements ActionListener{
 	
 	int jumpCd = 0, jumpCd2 = 0;
 	
+	// Rectangle ultRect = new Rectangle(0, 0, 0, 0), ultRect2 = new Rectangle(0, 0, 0, 0);
 	Rectangle[] backs = new Rectangle[2];
 	Rectangle fighter = new Rectangle(300, 720-50, 50, 50);
 	Rectangle dummy = new Rectangle(700, 720-50, 50, 50); 
@@ -52,7 +56,10 @@ public class GamePanel extends JPanel implements ActionListener{
 		g.setColor(backCol);
 		g.fillRect(0, 0, 1280, 720);
 		// decide which hitbox to use
-		if (!atking) { // no attack = idle, even if moving
+		if (ult) {
+			currHbxH = 3;
+			currAtkH = 2;
+		} else if (!atking) { // no attack = idle, even if moving
 			currHbxH = 0;
 		} else {
 			if (up==0) {
@@ -64,7 +71,10 @@ public class GamePanel extends JPanel implements ActionListener{
 			}
 		} 
 		
-		if (!atking2) { // no attack = idle, even if moving
+		if (ult2) {
+			currHbxC = 3;
+			currAtkC = 2;
+		} else if (!atking2) { // no attack = idle, even if moving
 			currHbxC = 0;
 		} else {
 			if (up2==0) {
@@ -161,11 +171,15 @@ public class GamePanel extends JPanel implements ActionListener{
 		
 		// hp and energy
 		g.setColor(col[0]);
-		g.fillRect(0, 0,(int)(400*phost.intchealth/phost.intphealth), 50);
-		g.fillRect(1280-(int)(400*pclient.intchealth/pclient.intphealth), 0, 400, 50);
+		g.fillRect(0, 0,(int)(400*(phost.intchealth*1.0/phost.intphealth)), 50);
+		g.fillRect(1280-(int)(400*(pclient.intchealth*1.0/pclient.intphealth)), 0, 400, 50);
 		
-		g.setColor(col[1]);
+		if (phost.intcenergy==50) g.setColor(col[2]);
+		else g.setColor(col[1]);
 		g.fillRect(0, 50, (int)(5*phost.intcenergy), 25);
+		
+		if (pclient.intcenergy==50) g.setColor(col[2]);
+		else g.setColor(col[1]);
 		g.fillRect(1280-(int)(5*pclient.intcenergy), 50, 300, 25);
 		
 		// enemy hitbox
@@ -208,6 +222,14 @@ public class GamePanel extends JPanel implements ActionListener{
 		}
 		
 		if (atking) {
+			if (atkTicks==0) {
+				if (atks[up].intersects(dummy)&&AllOutScrap.blnS) {
+					backs[1].x = fighter.x > dummy.x ? Math.max(0, backs[1].x-(1000/pclient.intpweight)) : Math.min(backs[1].x+(1000/pclient.intpweight), 1280-256);
+					pclient.intchealth -= phost.intpattack;
+					if (phost.intcenergy!=50) phost.intcenergy += 5;
+					AllOutScrap.ssm.sendText("knockback"+AllOutScrap.strSep+"0");
+				}
+			}
 			if (atkTicks<10) {
 				g.setColor(Color.blue);
 				g.fillRect(atks[up].x, atks[up].y, atks[up].width, atks[up].height);
@@ -222,6 +244,13 @@ public class GamePanel extends JPanel implements ActionListener{
 		}
 		
 		if (atking2) {
+			if (atkTicks2==0) {
+				if (atks2[up2].intersects(fighter)&&AllOutScrap.blnS) {
+					backs[0].x = fighter.x < dummy.x ? Math.max(0, backs[0].x-(1000/phost.intpweight)) : Math.min(backs[0].x+(1000/phost.intpweight), 1280-256);
+					phost.intchealth -= pclient.intpattack;
+					if (pclient.intcenergy!=50) pclient.intcenergy += 5;
+				}
+			}
 			if (atkTicks2<10) {
 				g.setColor(Color.blue);
 				g.fillRect(atks2[up2].x, atks2[up2].y, atks2[up2].width, atks2[up2].height);
@@ -233,6 +262,45 @@ public class GamePanel extends JPanel implements ActionListener{
 			atkTicks2++;
 		} else if (atkCd2>0) {
 			atkCd2--;
+		}
+		
+		if (ult) {
+			if (ultTicks==0) {
+				if (atks[1].intersects(dummy)&&AllOutScrap.blnS) {
+					phost.intcenergy = 0;
+					pclient.intchealth -= phost.intpattack*3;
+					backs[1].x = fighter.x > dummy.x ? Math.max(0, backs[1].x-(3000/pclient.intpweight)) : Math.min(backs[1].x+(3000/pclient.intpweight), 1280-256);
+					AllOutScrap.ssm.sendText("knockback"+AllOutScrap.strSep+"1");
+				}
+			} 
+			// show attack on screen
+			if (ultTicks<40) {
+				g.setColor(Color.blue);
+				g.fillRect(atks[1].x, atks[1].y, atks[1].width, atks[1].height);
+			} else if (ultTicks==40) {
+				ultTicks = -1;
+				ult = false;
+			}
+			ultTicks++;
+		}
+		
+		if (ult2) {
+			if (ultTicks2==0) {
+				if (atks2[1].intersects(fighter)&&AllOutScrap.blnS) {
+					pclient.intcenergy = 0;
+					phost.intchealth -= pclient.intpattack*3;
+					backs[0].x = fighter.x < dummy.x ? Math.max(0, backs[0].x-(3000/phost.intpweight)) : Math.min(backs[0].x+(3000/phost.intpweight), 1280-256);
+				}
+			} 
+			// show attack on screen
+			if (ultTicks2<40) {
+				g.setColor(Color.blue);
+				g.fillRect(atks2[1].x, atks2[1].y, atks2[1].width, atks2[1].height);
+			} else if (ultTicks2==40) {
+				ultTicks2 = -1;
+				ult2 = false;
+			}
+			ultTicks2++;
 		}
 		
 		if (AllOutScrap.blnS&&AllOutScrap.ssm!=null) AllOutScrap.sendUpdate();
@@ -249,6 +317,7 @@ public class GamePanel extends JPanel implements ActionListener{
 		setPreferredSize(new Dimension(1280, 720));
 		col[0] = Color.red;
 		col[1] = Color.blue;
+		col[2] = Color.green;
 		time.start();
 		backs[0] = new Rectangle(0, 720-256, 256, 256);
 		backs[1] = new Rectangle(1280-256, 720-256, 256, 256);
