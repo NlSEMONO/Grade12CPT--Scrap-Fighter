@@ -61,13 +61,11 @@ public class AllOutScrap implements ActionListener,WindowListener, KeyListener, 
 	
 	public void keyReleased(KeyEvent evt){
 		if (!inGame) {
-			if (evt.getKeyChar()=='w' || evt.getKeyChar()=='W') {
-				themenu.defY = 0;
-			} else if (evt.getKeyChar()=='a' || evt.getKeyChar()=='A') {
+			if (evt.getKeyChar()=='a' || evt.getKeyChar()=='A') {
 				themenu.defX = 0;
 				themenu.left = true;
 			} else if (evt.getKeyChar()=='s' || evt.getKeyChar()=='S') {
-				themenu.defY = 0;
+				themenu.duck = false;
 			} else if (evt.getKeyChar()=='d' || evt.getKeyChar()=='D') {
 				themenu.defX = 0;
 				themenu.left = false;
@@ -129,15 +127,16 @@ public class AllOutScrap implements ActionListener,WindowListener, KeyListener, 
 				}
 			} 
 			if (evt.getKeyChar()=='w' || evt.getKeyChar()=='W') {
-				themenu.defY = -5;
+				if (!themenu.duck) themenu.jump = true;
 			} else if (evt.getKeyChar()=='a' || evt.getKeyChar()=='A') {
 				themenu.defX = -5;
 				themenu.left = true;
 			} else if (evt.getKeyChar()=='s' || evt.getKeyChar()=='S') {
-				themenu.defY = 5;
+				themenu.duck = true;
 			} else if (evt.getKeyChar()=='d' || evt.getKeyChar()=='D') {
 				themenu.defX = 5;
 				themenu.left = false;
+				
 			} 
 			if (themenu.left) {
 				themenu.atks[0].x = themenu.r.x-40;
@@ -169,8 +168,14 @@ public class AllOutScrap implements ActionListener,WindowListener, KeyListener, 
 			} else if (evt.getKeyChar()=='e'||evt.getKeyChar()=='E') {
 				// low attack
 				if (blnS) {
-					if (game.atkCd<1) game.atking = true;
-					game.up = 1;
+					if (game.done) {
+						game.done = false;
+						if (game.phost.introunds==game.serieswin||game.pclient.introunds==game.serieswin) toMenu();
+						else game.nextRound();
+					} else {
+						if (game.atkCd<1) game.atking = true;
+						game.up = 1;
+					}
 				} else {
 					if (game.atkCd2<1) {
 						game.atking2 = true;
@@ -270,6 +275,15 @@ public class AllOutScrap implements ActionListener,WindowListener, KeyListener, 
 	
 	public void mouseDragged (MouseEvent evt){
 		//probably won't need
+	}
+	
+	public void toMenu() {
+		ssm.sendText("toMenu");
+		theframe.setContentPane(themenu);
+		theframe.pack();
+		themenu.lastClick = 5;
+		themenu.cameraPos = new Point(0, 0);
+		inGame = false;
 	}
 	
 	public static void toGame() {
@@ -385,7 +399,7 @@ public class AllOutScrap implements ActionListener,WindowListener, KeyListener, 
 						game.scr.setVisible(true);
 						game.chatTicks=0;
 					}
-				}
+				} 
 			}
 		});
 		ssm.connect();
@@ -430,6 +444,24 @@ public class AllOutScrap implements ActionListener,WindowListener, KeyListener, 
 					int type = Integer.parseInt(strMess[1]);
 					if (type==0) game.backs[1].x = game.fighter.x > game.dummy.x ? Math.max(0, game.backs[1].x-(1000/game.pclient.intpweight)) : Math.min(game.backs[1].x+(1000/game.pclient.intpweight), 1280-256);
 					else game.backs[1].x = game.fighter.x > game.dummy.x ? Math.max(0, game.backs[1].x-(3000/game.pclient.intpweight)) : Math.min(game.backs[1].x+(3000/game.pclient.intpweight), 1280-256);
+				} else if (strMess[0].equals("roundEnd")) {
+					game.winner = strMess[1];
+					game.done = true;
+					game.phost.introunds = Integer.parseInt(strMess[2]);
+					game.pclient.introunds = Integer.parseInt(strMess[3]);
+				} else if (strMess[0].equals("nextRound")) {
+					game.done = false;
+				} else if (strMess[0].equals("gameEnd")) {
+					game.done = true;
+					game.winner = strMess[1];
+					game.phost.introunds = Integer.parseInt(strMess[2]);
+					game.pclient.introunds = Integer.parseInt(strMess[3]);
+				} else if (strMess[0].equals("toMenu")) {
+					theframe.setContentPane(themenu);
+					theframe.pack();
+					themenu.lastClick = 5;
+					themenu.cameraPos = new Point(0, 0);
+					inGame = false;
 				}
 			}
 		});

@@ -57,7 +57,14 @@ public class MenuPanel extends JPanel implements ActionListener, ChangeListener{
 	
 	phButt[] buttons = new phButt[15];
 	
+	double tme = 0;
+	double vi = 29.6;
+	double accel = -2.2;
+	boolean jump = false, duck = false;
+	boolean deced = false;
+	int jumpCd = 0;
 	
+	int add = 50;
 	
 	//methods
 	public void actionPerformed(ActionEvent evt){
@@ -126,13 +133,40 @@ public class MenuPanel extends JPanel implements ActionListener, ChangeListener{
 		// bottom middle button on main menu
 		if (lastClick==3) {
 			AllOutScrap.theframe.requestFocus();
+			
+			if (jump) {
+				r.y = (720-r.height)-((int)((vi*tme)+(accel*tme*tme)));
+				if (r.y-r.height > 720) {
+					r.y = 720-r.height;
+					jump = false;
+					tme = -0.5;
+					jumpCd = 30;
+				}
+				tme+=0.5;
+			}else if (jumpCd>0) {
+				jumpCd--;
+			}
+			
+			// duck
+			if (duck&&!deced) {
+				r.height /= 2;
+				r.y = 720+r.height;
+				deced = true;
+				add = 75;
+			} else if (!duck&&deced) {
+				deced = false;
+				r.height*=2;
+				r.y = 720-r.height;
+				add = 50;
+			}
+			
 			// dummy hitbox
 			menudraw.drawImage(helpscreenbg, 1472-pXDist, 0-pYDist, null);
 			menudraw.setColor(Color.red);
 			menudraw.fillRect(dummy.x+1472-pXDist, dummy.y-pYDist, dummy.width, dummy.height);
 			// training fighter hitbox
 			menudraw.setColor(Color.black);
-			menudraw.fillRect(r.x+1472-pXDist, r.y-pYDist + 50, r.width, r.height);
+			menudraw.fillRect(r.x+1472-pXDist, r.y-pYDist + add, r.width, r.height);
 			
 			if (atking) {
 				if (atkTicks<10) {
@@ -243,6 +277,8 @@ public class MenuPanel extends JPanel implements ActionListener, ChangeListener{
 			menudraw.drawImage(buttons[i].drawme,(int)buttons[i].getX(),(int)buttons[i].getY(),null);
 		}
 		g.drawImage(menuscreen,0,0,null);
+		
+		AllOutScrap.theframe.requestFocus();
 	}
 	
 	public BufferedImage img(String fileName) {

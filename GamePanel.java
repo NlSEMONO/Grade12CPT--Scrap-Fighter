@@ -2,6 +2,7 @@ import javax.swing.*;
 import java.awt.image.*;
 import java.awt.*;
 import java.io.*;
+import javax.imageio.*;
 import java.util.ArrayList;
 import javax.swing.event.*;
 import java.awt.event.*;
@@ -20,6 +21,10 @@ public class GamePanel extends JPanel implements ActionListener{
 	boolean atking2 = false, left2 = true, jump2 = false, duck2 = false;
 	boolean ult = false, ult2 = false;
 	int ultTicks = 0, ultTicks2 = 0;
+	int serieswin = 1;
+	String winner;
+	boolean done = false;
+	Font rounds, winlbl;
 	
 	int[][] hbxH = new int[4][4]; // server player hitboxes; row: 0 = idle, 1 - high attack, 2 - low attack, 3 - ult
 	int[][] hbxC = new int[4][4]; // client player hitboxes; row: 0 = idle, 1 - high attack, 2 - low attack, 3 - ult
@@ -51,10 +56,18 @@ public class GamePanel extends JPanel implements ActionListener{
 	String chatText = "";
 	String strSep = AllOutScrap.strSep;
 	
+	BufferedImage end;
+	
 	public void paintComponent(Graphics g) {
 		// background
 		g.setColor(backCol);
 		g.fillRect(0, 0, 1280, 720);
+		
+		// score
+		g.setColor(Color.black);
+		g.setFont(rounds);
+		g.drawString(phost.introunds+"-"+pclient.introunds, 600, 30);
+		
 		// decide which hitbox to use
 		if (ult) {
 			currHbxH = 3;
@@ -225,7 +238,7 @@ public class GamePanel extends JPanel implements ActionListener{
 			if (atkTicks==0) {
 				if (atks[up].intersects(dummy)&&AllOutScrap.blnS) {
 					backs[1].x = fighter.x > dummy.x ? Math.max(0, backs[1].x-(1000/pclient.intpweight)) : Math.min(backs[1].x+(1000/pclient.intpweight), 1280-256);
-					pclient.intchealth -= phost.intpattack;
+					if (!done) pclient.intchealth -= phost.intpattack;
 					if (phost.intcenergy!=50) phost.intcenergy += 5;
 					AllOutScrap.ssm.sendText("knockback"+AllOutScrap.strSep+"0");
 				}
@@ -247,7 +260,7 @@ public class GamePanel extends JPanel implements ActionListener{
 			if (atkTicks2==0) {
 				if (atks2[up2].intersects(fighter)&&AllOutScrap.blnS) {
 					backs[0].x = fighter.x < dummy.x ? Math.max(0, backs[0].x-(1000/phost.intpweight)) : Math.min(backs[0].x+(1000/phost.intpweight), 1280-256);
-					phost.intchealth -= pclient.intpattack;
+					if (!done) phost.intchealth -= pclient.intpattack;
 					if (pclient.intcenergy!=50) pclient.intcenergy += 5;
 				}
 			}
@@ -268,7 +281,7 @@ public class GamePanel extends JPanel implements ActionListener{
 			if (ultTicks==0) {
 				if (atks[1].intersects(dummy)&&AllOutScrap.blnS) {
 					phost.intcenergy = 0;
-					pclient.intchealth -= phost.intpattack*3;
+					if (!done) pclient.intchealth -= phost.intpattack*3;
 					backs[1].x = fighter.x > dummy.x ? Math.max(0, backs[1].x-(3000/pclient.intpweight)) : Math.min(backs[1].x+(3000/pclient.intpweight), 1280-256);
 					AllOutScrap.ssm.sendText("knockback"+AllOutScrap.strSep+"1");
 				}
@@ -288,7 +301,7 @@ public class GamePanel extends JPanel implements ActionListener{
 			if (ultTicks2==0) {
 				if (atks2[1].intersects(fighter)&&AllOutScrap.blnS) {
 					pclient.intcenergy = 0;
-					phost.intchealth -= pclient.intpattack*3;
+					if (!done) phost.intchealth -= pclient.intpattack*3;
 					backs[0].x = fighter.x < dummy.x ? Math.max(0, backs[0].x-(3000/phost.intpweight)) : Math.min(backs[0].x+(3000/phost.intpweight), 1280-256);
 				}
 			} 
@@ -305,10 +318,61 @@ public class GamePanel extends JPanel implements ActionListener{
 		
 		if (AllOutScrap.blnS&&AllOutScrap.ssm!=null) AllOutScrap.sendUpdate();
 		else AllOutScrap.move();
+		
+		if ((atking||atking2||ult||ult2)&&AllOutScrap.blnS&&!done) {
+			if (phost.intchealth<=0||pclient.intchealth<=0) {
+				if (phost.intchealth < pclient.intchealth) {
+					winner = pclient.strplayername;
+					pclient.introunds++;
+				} else {
+					winner = phost.strplayername;
+					phost.introunds++;
+				}
+				
+				AllOutScrap.sendUpdate();
+				if (phost.introunds==serieswin||pclient.introunds==serieswin) AllOutScrap.ssm.sendText("gameEnd"+strSep+winner+strSep+phost.introunds+strSep+pclient.introunds);
+				else AllOutScrap.ssm.sendText("roundEnd"+strSep+winner+strSep+phost.introunds+strSep+pclient.introunds);
+				done = true;
+			}
+		} 
+		if (done) {
+			g.drawImage(end, 0, 0, null);
+			g.setColor(Color.white);
+			g.setFont(winlbl);
+			String toScreen = AllOutScrap.blnS ? winner+" has won the round! Press e to start next round." : winner+" has won the round! Waiting for server to start next round.";
+			if (phost.introunds==serieswin||pclient.introunds==serieswin) {
+				toScreen = AllOutScrap.blnS ? winner+" has won the game! Press e to return to main menu." : winner+" has won the game! Waiting for server to close the lobby.";
+			}
+			g.drawString(toScreen, 350, 350);
+		}
 	}
 	
 	public void loadData(String[][] data) {
 		
+	}
+	
+	public void nextRound() {
+		phost.intcenergy = 0;
+		pclient.intcenergy = 0;
+		
+		phost.intchealth = phost.intphealth;
+		pclient.intchealth = pclient.intphealth;
+		
+		backs[0].x = 0;
+		backs[1].x = 1280-256;
+		
+		AllOutScrap.sendUpdate();
+		AllOutScrap.ssm.sendText("nextRound");
+	}
+	
+	public BufferedImage img(String fileName) {
+		// jar ver only
+		try {
+			return ImageIO.read(getClass().getResourceAsStream(fileName));
+		} catch (IOException e) {
+			System.out.println(e.getMessage());
+		}
+		return null;
 	}
 	
 	public GamePanel() {
@@ -340,6 +404,17 @@ public class GamePanel extends JPanel implements ActionListener{
 		chat.setLineWrap(true);
 		scr.setVisible(false);
 		mess.setVisible(false);
+		
+		end = img("blur.png");
+		
+		try {
+			rounds = Font.createFont(Font.PLAIN, this.getClass().getResourceAsStream("open-sans.regular.ttf"));
+			rounds = rounds.deriveFont(Font.PLAIN, 40);
+			winlbl = Font.createFont(Font.PLAIN, this.getClass().getResourceAsStream("open-sans.regular.ttf"));
+			winlbl = winlbl.deriveFont(Font.PLAIN, 20);
+		} catch (FontFormatException e){
+		} catch (IOException e){
+		}
 	}
 
 	@Override
