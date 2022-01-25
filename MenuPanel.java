@@ -66,6 +66,10 @@ public class MenuPanel extends JPanel implements ActionListener, ChangeListener{
 	
 	int add = 50;
 	
+	int numrounds;
+	String ipaddress;
+	JColorChooser thecolchooser = new JColorChooser();
+	
 	//methods
 	public void actionPerformed(ActionEvent evt){
 		if (evt.getSource() == thetimer){
@@ -78,6 +82,7 @@ public class MenuPanel extends JPanel implements ActionListener, ChangeListener{
 			int intValue = theslider.getValue();
 			System.out.println(intValue);
 			thelabel.setText(""+intValue);
+			numrounds = intValue;
 		}
 	}	
 	
@@ -115,9 +120,9 @@ public class MenuPanel extends JPanel implements ActionListener, ChangeListener{
 		
 		buttons[9].setLocation(971-(int)(pXDist*1.5),-622-(int)(pYDist*1.5)); 	//Ready Up Button
 		buttons[10].setLocation(655-(int)(pXDist*1.5),-622-(int)(pYDist*1.5)); 	//Colour Button
-		buttons[11].setLocation(250-(int)(pXDist*1.5),-622-(int)(pYDist*1.5));	//croom Button
-		buttons[12].setLocation(250-(int)(pXDist*1.5),-622-(int)(pYDist*1.5));	//jroom Button
-		buttons[13].setLocation(247-(int)(pXDist*1.5),-622-(int)(pYDist*1.5));	//lroom Button
+		buttons[11].setLocation(10000-(int)(pXDist*1.5),-10000-(int)(pYDist*1.5));	//croom Button
+		buttons[12].setLocation(10000-(int)(pXDist*1.5),-10000-(int)(pYDist*1.5));	//jroom Button
+		buttons[13].setLocation(10000-(int)(pXDist*1.5),-10000-(int)(pYDist*1.5));	//lroom Button
 		buttons[14].setLocation(1184-(int)(pXDist*1.5),-662-(int)(pYDist*1.5));	//Send Button
 		
 		ipfield.setLocation(250-(int)(pXDist*1.5),-682-(int)(pYDist*1.5));
@@ -249,6 +254,12 @@ public class MenuPanel extends JPanel implements ActionListener, ChangeListener{
 			usernamefield.setVisible(true);
 			theslider.setVisible(true);
 			
+			if (AllOutScrap.blnS == true){
+				buttons[11].setLocation(250-(int)(pXDist*1.5),-622-(int)(pYDist*1.5));	//croom Button
+			} else{ 
+				buttons[12].setLocation(250-(int)(pXDist*1.5),-622-(int)(pYDist*1.5));	//jroom Button
+				buttons[13].setLocation(426-(int)(pXDist*1.5),-622-(int)(pYDist*1.5));	//lroom Button
+			}
 			
 			
 		} else if (lastClick>=5&&lastClick<=8) {
@@ -260,7 +271,26 @@ public class MenuPanel extends JPanel implements ActionListener, ChangeListener{
 			usernamefield.setEditable(false);
 			usernamefield.setVisible(false);
 			theslider.setVisible(false);
+			buttons[11].setLocation(10000-(int)(pXDist*1.5),-10000-(int)(pYDist*1.5));	//croom Button
+			buttons[12].setLocation(10000-(int)(pXDist*1.5),-10000-(int)(pYDist*1.5));	//jroom Button
+			buttons[13].setLocation(10000-(int)(pXDist*1.5),-10000-(int)(pYDist*1.5));	//lroom Button
 			AllOutScrap.theframe.requestFocus();
+			
+		} else if (lastClick == 14){
+			lastClick = AllOutScrap.blnS ? 0 : 1;
+			thetxtarea.append("\n" + usernamefield.getText() + ": " + chatfield.getText());
+		} else if (lastClick == 9){
+			lastClick = AllOutScrap.blnS ? 0 : 1;
+			if (AllOutScrap.blnS == true){
+				AllOutScrap.ready[0] = true;
+			}else{
+				AllOutScrap.ready[1] = true;
+			}
+		} else if (lastClick == 10){
+			Color thecolor = thecolchooser.showDialog(themenucol, "Colour Chooser", new Color(0,0,0));
+			AllOutScrap.rgb[0] = thecolor.getRed());
+			AllOutScrap.rgb[1] = thecolor.getGreen());
+			AllOutScrap.rgb[2] = thecolor.getBlue());
 		}
 		
 		
@@ -278,7 +308,6 @@ public class MenuPanel extends JPanel implements ActionListener, ChangeListener{
 		}
 		g.drawImage(menuscreen,0,0,null);
 		
-		AllOutScrap.theframe.requestFocus();
 	}
 	
 	public BufferedImage img(String fileName) {
@@ -320,14 +349,14 @@ public class MenuPanel extends JPanel implements ActionListener, ChangeListener{
 			select[i] = new phButt(0, 0, 200, 200,0,828,"f"+i+"def.jpg","f"+i+"def.jpg","f"+i+"def.jpg");
 		}
 		
-		buttons[9] = new phButt(0,0,284,90,0,0,"b1def.png","b1hov.png","b1prs.png"); 	//readyupbutton
-		buttons[10] = new phButt(0,0,266,90,0,0,"b1def.png","b1hov.png","b1prs.png"); 	//colorbutton
+		buttons[9] = new phButt(0,0,284,90,0,828,"b1def.png","b1hov.png","b1prs.png"); 	//readyupbutton
+		buttons[10] = new phButt(0,0,266,90,0,828,"b1def.png","b1hov.png","b1prs.png"); 	//colorbutton
 		
-		buttons[11] = new phButt(0,0,355,90,0,0,"b1def.png","b1hov.png","b1prs.png"); 	//croombutton
-		buttons[12] = new phButt(0,0,177,90,0,0,"b1def.png","b1hov.png","b1prs.png"); 	//jroombutton
-		buttons[13] = new phButt(0,0,176,90,0,0,"b1def.png","b1hov.png","b1prs.png");	//lroombutton 
+		buttons[11] = new phButt(0,0,355,90,0,828,"b1def.png","b1hov.png","b1prs.png"); 	//croombutton
+		buttons[12] = new phButt(0,0,177,90,0,828,"b1def.png","b1hov.png","b1prs.png"); 	//jroombutton
+		buttons[13] = new phButt(0,0,176,90,0,828,"b1def.png","b1hov.png","b1prs.png");	//lroombutton 
 
-		buttons[14] = new phButt(0,0,71,30,0,0,"b1def.png","b1hov.png","b1prs.png");	//sendbutton 
+		buttons[14] = new phButt(0,0,71,30,0,828,"b1def.png","b1hov.png","b1prs.png");	//sendbutton 
 	
 		
 		ipfield.setSize(355,50);
