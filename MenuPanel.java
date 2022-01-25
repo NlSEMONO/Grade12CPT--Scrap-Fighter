@@ -6,7 +6,7 @@ import java.awt.image.*;
 import java.io.*;
 import javax.imageio.ImageIO;
 
-public class MenuPanel extends JPanel implements ActionListener{ 
+public class MenuPanel extends JPanel implements ActionListener, ChangeListener{ 
 	//properties
 	Timer thetimer = new Timer(1000/80,this);
 	BufferedImage menuscreen = new BufferedImage(1280,720,BufferedImage.TYPE_INT_RGB);
@@ -19,8 +19,11 @@ public class MenuPanel extends JPanel implements ActionListener{
 	
 	JTextField ipfield = new JTextField("127.0.0.1");
 	JTextField portfield = new JTextField("9112");
-	
 	JTextField chatfield = new JTextField("Chat Text Goes Here");
+	JSlider theslider = new JSlider (SwingConstants.HORIZONTAL,1,10,5);
+	JLabel thelabel = new JLabel("Rounds");
+	JTextArea thetxtarea = new JTextArea("Chat Area!!!");
+	JScrollPane thescroll = new JScrollPane(thetxtarea);
 	
 	//combine mouse x and y into one point
 	Point mousePos = new Point(640,360);
@@ -61,6 +64,14 @@ public class MenuPanel extends JPanel implements ActionListener{
 		if (evt.getSource() == thetimer){
 			this.repaint();
 		}
+	}
+	
+	public void stateChanged(ChangeEvent evt){
+		if (evt.getSource() == theslider){
+			int intValue = theslider.getValue();
+			System.out.println(intValue);
+			thelabel.setText(""+intValue);
+		}
 	}	
 	
 	public void paintComponent(Graphics g){
@@ -90,23 +101,31 @@ public class MenuPanel extends JPanel implements ActionListener{
 		buttons[3].setLocation(485-(int)(pXDist*1.5),576-(int)(pYDist*1.5));
 		buttons[4].setLocation(144-(int)(pXDist*1.5),576-(int)(pYDist*1.5));
 			
-		buttons[5].setLocation(30-(int)(pXDist*1.5),-622-(int)(pYDist*1.5));
+		buttons[5].setLocation(50-(int)(pXDist*1.5),-622-(int)(pYDist*1.5));
 		buttons[6].setLocation(555-(int)(pXDist*1.5),1262-(int)(pYDist*1.5));
 		buttons[7].setLocation(2238-(int)(pXDist*1.5),600-(int)(pYDist*1.5));
 		buttons[8].setLocation(-1128-(int)(pXDist*1.5),600-(int)(pYDist*1.5));
 		
-		buttons[9].setLocation(-1128-(int)(pXDist*1.5),600-(int)(pYDist*1.5));
-		buttons[10].setLocation(-1128-(int)(pXDist*1.5),600-(int)(pYDist*1.5));
-		buttons[11].setLocation(-1128-(int)(pXDist*1.5),600-(int)(pYDist*1.5));
-		buttons[12].setLocation(-1128-(int)(pXDist*1.5),600-(int)(pYDist*1.5));
-		buttons[13].setLocation(-1128-(int)(pXDist*1.5),600-(int)(pYDist*1.5));
-		buttons[14].setLocation(-1128-(int)(pXDist*1.5),600-(int)(pYDist*1.5));
+		buttons[9].setLocation(971-(int)(pXDist*1.5),-622-(int)(pYDist*1.5)); 	//Ready Up Button
+		buttons[10].setLocation(655-(int)(pXDist*1.5),-622-(int)(pYDist*1.5)); 	//Colour Button
+		buttons[11].setLocation(250-(int)(pXDist*1.5),-622-(int)(pYDist*1.5));	//croom Button
+		buttons[12].setLocation(250-(int)(pXDist*1.5),-622-(int)(pYDist*1.5));	//jroom Button
+		buttons[13].setLocation(247-(int)(pXDist*1.5),-622-(int)(pYDist*1.5));	//lroom Button
+		buttons[14].setLocation(1184-(int)(pXDist*1.5),-662-(int)(pYDist*1.5));	//Send Button
+		
+		ipfield.setLocation(250-(int)(pXDist*1.5),-682-(int)(pYDist*1.5));
+		chatfield.setLocation(971-(int)(pXDist*1.5),-662-(int)(pYDist*1.5));
+		usernamefield.setLocation(250-(int)(pXDist*1.5),-772-(int)(pYDist*1.5));
+		theslider.setLocation(655-(int)(pXDist*1.5),-682-(int)(pYDist*1.5));
+		thelabel.setLocation(855-(int)(pXDist*1.5),-682-(int)(pYDist*1.5));
+		thescroll.setLocation(971-(int)(pXDist*1.5),-1195-(int)(pYDist*1.5));
 		
 		r.x = Math.min(Math.max(r.x + defX,50),1230);
 		r.y = Math.min(Math.max(r.y + defY,50),620);
 		
 		// bottom middle button on main menu
 		if (lastClick==3) {
+			AllOutScrap.theframe.requestFocus();
 			// dummy hitbox
 			menudraw.drawImage(helpscreenbg, 1472-pXDist, 0-pYDist, null);
 			menudraw.setColor(Color.red);
@@ -150,7 +169,7 @@ public class MenuPanel extends JPanel implements ActionListener{
 		// host game button & join game button
 		else if (lastClick==0 || lastClick == 1) {
 		 // draw character select buttons
-			for (int i=0;i<4;i++) select[i].setLocation(100+(200*(i%2))-(int)(pXDist*1.25), -935+(200*(i/2)-(int)(pYDist*1.25)));
+			for (int i=0;i<4;i++) select[i].setLocation(50+(200*(i%2))-(int)(pXDist*1.25), -985+(200*(i/2)-(int)(pYDist*1.25)));
 			for (int i=0;i<4;i++) {
 				if (select[i].changelook(mousePos, mouseDown, retriggerCatch)){
 					cameraPos = select[i].pwp;
@@ -176,10 +195,10 @@ public class MenuPanel extends JPanel implements ActionListener{
 			
 			// if a selection/hover has been made, draw the appropriate image
 			if (selected!=-1) {
-				menudraw.drawImage(selectImg[2], 100+(200*(selected%2))-(int)(pXDist*1.25), -935+(200*(selected/2))-(int)(pYDist*1.25), null);
+				menudraw.drawImage(selectImg[2], 50+(200*(selected%2))-(int)(pXDist*1.25), -985+(200*(selected/2))-(int)(pYDist*1.25), null);
 			} 
 			if (hovered!=-1) {
-				menudraw.drawImage(selectImg[0], 100+(200*(hovered%2))-(int)(pXDist*1.25), -935+(200*(hovered/2))-(int)(pYDist*1.25), null);
+				menudraw.drawImage(selectImg[0], 50+(200*(hovered%2))-(int)(pXDist*1.25), -985+(200*(hovered/2))-(int)(pYDist*1.25), null);
 			}
 			
 			AllOutScrap.blnS = lastClick==0 ? true : false;
@@ -188,13 +207,26 @@ public class MenuPanel extends JPanel implements ActionListener{
 				else AllOutScrap.makeClient("localhost"); 
 			} 
 			
-			
-			
+			ipfield.setEditable(true);
+			ipfield.setVisible(true);
+			chatfield.setEditable(true);
+			chatfield.setVisible(true);
+			usernamefield.setEditable(true);
+			usernamefield.setVisible(true);
+			theslider.setVisible(true);
 			
 			
 			
 		} else if (lastClick>=5&&lastClick<=8) {
 			AllOutScrap.ssm = null;
+			ipfield.setEditable(false);
+			ipfield.setVisible(false);
+			chatfield.setEditable(false);
+			chatfield.setVisible(false);
+			usernamefield.setEditable(false);
+			usernamefield.setVisible(false);
+			theslider.setVisible(false);
+			AllOutScrap.theframe.requestFocus();
 		}
 		
 		
@@ -252,28 +284,50 @@ public class MenuPanel extends JPanel implements ActionListener{
 			select[i] = new phButt(0, 0, 200, 200,0,828,"f"+i+"def.jpg","f"+i+"def.jpg","f"+i+"def.jpg");
 		}
 		
-		buttons[9] = new phButt(0,0,170,90,0,0,"b1def.png","b1hov.png","b1prs.png"); 	//readyupbutton
-		buttons[10] = new phButt(0,0,170,90,0,0,"b1def.png","b1hov.png","b1prs.png"); 	//colorbutton
+		buttons[9] = new phButt(0,0,284,90,0,0,"b1def.png","b1hov.png","b1prs.png"); 	//readyupbutton
+		buttons[10] = new phButt(0,0,266,90,0,0,"b1def.png","b1hov.png","b1prs.png"); 	//colorbutton
 		
-		buttons[11] = new phButt(0,0,170,90,0,0,"b1def.png","b1hov.png","b1prs.png"); 	//croombutton
-		buttons[12] = new phButt(0,0,170,90,0,0,"b1def.png","b1hov.png","b1prs.png"); 	//jroombutton
-		buttons[13] = new phButt(0,0,170,90,0,0,"b1def.png","b1hov.png","b1prs.png");	//lroombutton 
+		buttons[11] = new phButt(0,0,355,90,0,0,"b1def.png","b1hov.png","b1prs.png"); 	//croombutton
+		buttons[12] = new phButt(0,0,177,90,0,0,"b1def.png","b1hov.png","b1prs.png"); 	//jroombutton
+		buttons[13] = new phButt(0,0,176,90,0,0,"b1def.png","b1hov.png","b1prs.png");	//lroombutton 
 
-		buttons[14] = new phButt(0,0,170,90,0,0,"b1def.png","b1hov.png","b1prs.png");	//sendbutton 
+		buttons[14] = new phButt(0,0,71,30,0,0,"b1def.png","b1hov.png","b1prs.png");	//sendbutton 
 	
 		
-		ipfield.setSize(400,50);
+		ipfield.setSize(355,50);
 		//ipfield.setHorizontalAlignment(JTextField.CENTER);
 		ipfield.setEditable(false);
 		ipfield.setVisible(false);
 		add(ipfield);
 		
 		
-		chatfield.setSize(400,50);
+		chatfield.setSize(213,30);
 		//portfield.setHorizontalAlignment(JTextField.CENTER);
 		chatfield.setEditable(false);
 		chatfield.setVisible(false);
 		add(chatfield);
+		
+		usernamefield.setSize(671,80);
+		//usernamefield.setHorizontalAlignment(JTextField.CENTER);
+		Font font1 = new Font("SansSerif", Font.PLAIN, 30);
+		usernamefield.setFont(font1);
+		usernamefield.setEditable(false);
+		usernamefield.setVisible(false);
+		add(usernamefield);
+		
+		theslider.setSize(200,50);
+		theslider.setVisible(false);
+		theslider.addChangeListener(this);
+		add(theslider);
+		
+		thelabel.setSize(66, 50);
+		thelabel.setHorizontalAlignment(JTextField.CENTER);
+		add(thelabel);
+		
+		thetxtarea.setEditable(false);
+		thescroll.setSize(284,523);
+		add(thescroll);
+		//multi-line
 		
 		AllOutScrap.theframe.requestFocus();
 		
