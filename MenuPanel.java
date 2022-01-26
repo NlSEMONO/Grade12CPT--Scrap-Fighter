@@ -382,31 +382,29 @@ public class MenuPanel extends JPanel implements ActionListener, ChangeListener{
 		setPreferredSize(new Dimension(1280,720));
 		
 		//switch to menu buttons
-		buttons[0] = new phButt(0,0,480,130,0,828,"b1def.png","b1hov.png","b1prs.png");
-		buttons[1] = new phButt(0,0,480,130,0,828,"b1def.png","b1hov.png","b1prs.png");
-		buttons[2] = new phButt(0,0,310,86,0,-828,"b1def.png","b1hov.png","b1prs.png");
-		buttons[3] = new phButt(0,0,310,86,-1472,0,"b1def.png","b1hov.png","b1prs.png");
-		buttons[4] = new phButt(0,0,310,86,1472,0,"b1def.png","b1hov.png","b1prs.png");
+		buttons[0] = new phButt(0,0,480,130,0,828,"ServerButtondef.png","ServerButtonhov.png","ServerButtonprs.png");		//serverbutton
+		buttons[1] = new phButt(0,0,480,130,0,828,"ClientButtondef.png","ClientButtonhov.png","ClientButtonprs.png");		//clientbutton
+		buttons[2] = new phButt(0,0,310,86,0,-828,"CreditsButtondef.png","CreditsButtonhov.png","CreditsButtonprs.png");		//creditsbutton
+		buttons[3] = new phButt(0,0,310,86,-1472,0,"TutorialButtondef.png","TutorialButtonhov.png","TutorialButtonprs.png");	//tutorialbutton
+		buttons[4] = new phButt(0,0,310,86,1472,0,"HighscoresButtondef.png","HighscoresButtonhov.png","HighscoresButtonprs.png");		//highscoresbutton
 		
 		//return to menu buttons
-		buttons[5] = new phButt(0,0,170,90,0,0,"b1def.png","b1hov.png","b1prs.png");
-		buttons[6] = new phButt(0,0,170,90,0,0,"b1def.png","b1hov.png","b1prs.png");
-		buttons[7] = new phButt(0,0,170,90,0,0,"b1def.png","b1hov.png","b1prs.png");
-		buttons[8] = new phButt(0,0,170,90,0,0,"b1def.png","b1hov.png","b1prs.png");
+		buttons[5] = new phButt(0,0,170,90,0,0,"BackButtondef.png","BackButtonhov.png","BackButtonprs.png");
+		buttons[6] = new phButt(0,0,170,90,0,0,"BackButtondef.png","BackButtonhov.png","BackButtonprs.png");
+		buttons[7] = new phButt(0,0,170,90,0,0,"BackButtondef.png","BackButtonhov.png","BackButtonprs.png");
+		buttons[8] = new phButt(0,0,170,90,0,0,"BackButtondef.png","BackButtonhov.png","BackButtonprs.png");
 		
 		// character select buttons
 		for (int i=0;i<4;i++) {
 			select[i] = new phButt(0, 0, 200, 200,0,828,"f"+i+"def.jpg","f"+i+"def.jpg","f"+i+"def.jpg");
 		}
 		
-		buttons[9] = new phButt(0,0,284,90,0,828,"b1def.png","b1hov.png","b1prs.png"); 	//readyupbutton
-		buttons[10] = new phButt(0,0,266,90,0,828,"b1def.png","b1hov.png","b1prs.png"); 	//colorbutton
-		
-		buttons[11] = new phButt(0,0,355,90,0,828,"b1def.png","b1hov.png","b1prs.png"); 	//croombutton
-		buttons[12] = new phButt(0,0,177,90,0,828,"b1def.png","b1hov.png","b1prs.png"); 	//jroombutton
-		buttons[13] = new phButt(0,0,176,90,0,828,"b1def.png","b1hov.png","b1prs.png");	//lroombutton 
-
-		buttons[14] = new phButt(0,0,71,30,0,828,"b1def.png","b1hov.png","b1prs.png");	//sendbutton 
+		buttons[9] = new phButt(0,0,284,90,0,828,"ReadyButtondef.png","ReadyButtonhov.png","ReadyButtonprs.png"); 		//readyupbutton
+		buttons[10] = new phButt(0,0,266,90,0,828,"UXColourButtondef.png","UXColourButtonhov.png","UXColourButtonprs.png"); 	//colorbutton
+		buttons[11] = new phButt(0,0,355,90,0,828,"CreateButtondef.png","CreateButtonhov.png","CreateButtonprs.png"); 	//croombutton
+		buttons[12] = new phButt(0,0,177,90,0,828,"JoinButtondef.png","JoinButtonhov.png","JoinButtonprs.png"); 	//jroombutton
+		buttons[13] = new phButt(0,0,176,90,0,828,"LeaveButtondef.png","LeaveButtonhov.png","LeaveButtonprs.png");		//lroombutton
+		buttons[14] = new phButt(0,0,71,30,0,828,"SendButtondef.png","SendButtonhov.png","SendButtondprs.png");		//sendbutton 
 	
 		
 		ipfield.setSize(355,50);
