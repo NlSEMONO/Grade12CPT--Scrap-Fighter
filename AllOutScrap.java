@@ -317,6 +317,7 @@ public class AllOutScrap implements ActionListener,WindowListener, KeyListener, 
 	}
 	
 	public static void toGame() {
+		theframe.requestFocus();
 		// server tells client to start the game if characters are chosen and both players are readied up
 		if (locked[1]&&locked[0]&&blnS&&chars[0]!=-1&&chars[1]!=-1) {
 			theframe.setContentPane(game);
@@ -328,8 +329,8 @@ public class AllOutScrap implements ActionListener,WindowListener, KeyListener, 
 			
 			// load character hitboxes into game
 			System.out.println(chars[0]+" "+chars[1]);
-			for (int i=0;i<4;i++) for (int j=0;j<4;j++) game.hbxH[i][j] = Integer.parseInt(hbxes[4*chars[0]+i][j]); 
-			for (int i=0;i<4;i++) for (int j=0;j<4;j++) game.hbxC[i][j] = Integer.parseInt(hbxes[4*chars[1]+i][j]); 
+			for (int i=0;i<8;i++) for (int j=0;j<4;j++) game.hbxH[i][j] = Integer.parseInt(hbxes[8*chars[0]+i][j]); 
+			for (int i=0;i<8;i++) for (int j=0;j<4;j++) game.hbxC[i][j] = Integer.parseInt(hbxes[8*chars[1]+i][j]); 
 			for (int i=0;i<3;i++) for (int j=0;j<4;j++) game.atkhbxH[i][j] = Integer.parseInt(atkhbxes[3*chars[0]+i][j]); 
 			for (int i=0;i<3;i++) for (int j=0;j<4;j++) game.atkhbxC[i][j] = Integer.parseInt(atkhbxes[3*chars[1]+i][j]); 
 		// server tells ppl to choose characters if both players are readied up
@@ -353,9 +354,11 @@ public class AllOutScrap implements ActionListener,WindowListener, KeyListener, 
 			theframe.pack();
 			inGame = true;
 			
+			
+			
 			// hitboxes temporary for client side
-			for (int i=0;i<4;i++) for (int j=0;j<4;j++) game.hbxH[i][j] = Integer.parseInt(hbxes[4*chars[0]+i][j]); 
-			for (int i=0;i<4;i++) for (int j=0;j<4;j++) game.hbxC[i][j] = Integer.parseInt(hbxes[4*chars[1]+i][j]); 
+			for (int i=0;i<8;i++) for (int j=0;j<4;j++) game.hbxH[i][j] = Integer.parseInt(hbxes[8*chars[0]+i][j]); 
+			for (int i=0;i<8;i++) for (int j=0;j<4;j++) game.hbxC[i][j] = Integer.parseInt(hbxes[8*chars[1]+i][j]); 
 			for (int i=0;i<3;i++) for (int j=0;j<4;j++) game.atkhbxH[i][j] = Integer.parseInt(atkhbxes[3*chars[0]+i][j]); 
 			for (int i=0;i<3;i++) for (int j=0;j<4;j++) game.atkhbxC[i][j] = Integer.parseInt(atkhbxes[3*chars[1]+i][j]); 
 		}
@@ -383,6 +386,10 @@ public class AllOutScrap implements ActionListener,WindowListener, KeyListener, 
 		
 		// change healthbar color 
 		game.col[0] = new Color(rgb[0], rgb[1], rgb[2]);
+		
+		System.out.println("yes"+" "+chars[0] +" "+chars[1]);
+		game.pSprites = game.sprites[chars[0]];
+		game.cSprites = game.sprites[chars[1]];
 	}
 	
 	public static void sendUpdate() {
@@ -517,8 +524,8 @@ public class AllOutScrap implements ActionListener,WindowListener, KeyListener, 
 					}
 				} else if (strMess[0].equals("knockback")) {
 					int type = Integer.parseInt(strMess[1]);
-					if (type==0) game.backs[1].x = game.fighter.x > game.dummy.x ? Math.max(0, game.backs[1].x-(1000/game.pclient.intpweight)) : Math.min(game.backs[1].x+(1000/game.pclient.intpweight), 1280-256);
-					else game.backs[1].x = game.fighter.x > game.dummy.x ? Math.max(0, game.backs[1].x-(3000/game.pclient.intpweight)) : Math.min(game.backs[1].x+(3000/game.pclient.intpweight), 1280-256);
+					if (type==0)game.kb = true;
+					else game.kb2 = true;
 				} else if (strMess[0].equals("roundEnd")) {
 					game.winner = strMess[1];
 					game.done = true;
@@ -584,7 +591,7 @@ public class AllOutScrap implements ActionListener,WindowListener, KeyListener, 
 		theframe.setResizable(false);
 		theframe.setVisible(true);
 		statistics = loader.CharStatsRender("Basic Character Stats - Sheet1.csv", 4, 4);
-		hbxes = loader.CharStatsRender("Main Body Hitbox Stats - Sheet1.csv", 16, 4);
+		hbxes = loader.CharStatsRender("Main Body Hitbox Stats - Sheet1.csv", 32, 4);
 		atkhbxes = loader.CharStatsRender("High, Low and Ult Hitbox Stats - Sheet1.csv", 12, 4);
 		highscores = loader.highscores();
 		rgb[0] = 255;

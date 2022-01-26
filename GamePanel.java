@@ -27,8 +27,8 @@ public class GamePanel extends JPanel implements ActionListener{
 	boolean done = false;
 	Font rounds, winlbl;
 	
-	int[][] hbxH = new int[4][4]; // server player hitboxes; row: 0 = idle, 1 - high attack, 2 - low attack, 3 - ult
-	int[][] hbxC = new int[4][4]; // client player hitboxes; row: 0 = idle, 1 - high attack, 2 - low attack, 3 - ult
+	int[][] hbxH = new int[8][4]; // server player hitboxes; row: 0 = idle, 1 - high attack, 2 - low attack, 3 - ult
+	int[][] hbxC = new int[8][4]; // client player hitboxes; row: 0 = idle, 1 - high attack, 2 - low attack, 3 - ult
 	int[][] atkhbxH = new int[3][4]; // server attack hitboxes; 0 - high attack, 1 - low attack, 2 - ult
 	int[][] atkhbxC = new int[3][4]; // client attack hitboxes; 0 - high attack, 1 - low attack, 2 - ult
 	
@@ -58,6 +58,16 @@ public class GamePanel extends JPanel implements ActionListener{
 	String strSep = AllOutScrap.strSep;
 	
 	BufferedImage end;
+	BufferedImage[][] sprites = new BufferedImage[4][8];
+	
+	BufferedImage[] pSprites;
+	BufferedImage[] cSprites;
+	
+	int intDis = 0;
+	int intDis2 = 0;
+	
+	boolean kb = false;
+	boolean kb2 = false;
 	
 	public void paintComponent(Graphics g) {
 		// background
@@ -69,13 +79,16 @@ public class GamePanel extends JPanel implements ActionListener{
 		g.setFont(rounds);
 		g.drawString(phost.introunds+"-"+pclient.introunds, 600, 30);
 		
-		// decide which hitbox to use
+		// hitbox variables
+		currHbxH = 0;
+		currHbxC = 0;
+		
+		// SERVER MOVEMENTS
+		// decide which hitbox to use (server)
 		if (ult) {
 			currHbxH = 3;
 			currAtkH = 2;
-		} else if (!atking) { // no attack = idle, even if moving
-			currHbxH = 0;
-		} else {
+		} else if (atking) { // no attack = idle, even if moving
 			if (up==0) {
 				currHbxH = 1;
 				currAtkH = 0;
@@ -83,14 +96,17 @@ public class GamePanel extends JPanel implements ActionListener{
 				currHbxH = 2;
 				currAtkH = 1;
 			}
-		} 
+		} else if (duck) {
+			currHbxH = 5;
+		} else if (jump) {
+			currHbxH = 4;
+		}
+		
 		
 		if (ult2) {
 			currHbxC = 3;
 			currAtkC = 2;
-		} else if (!atking2) { // no attack = idle, even if moving
-			currHbxC = 0;
-		} else {
+		} else if (atking2) { // no attack = idle, even if moving
 			if (up2==0) {
 				currHbxC = 1;
 				currAtkC = 0;
@@ -98,9 +114,13 @@ public class GamePanel extends JPanel implements ActionListener{
 				currHbxC = 2;
 				currAtkC = 1;
 			}
-		} 
+		} else if (duck2){
+			currHbxC = 5;
+		} else if (jump2) {
+			currHbxC = 4;
+		}
 				
-		// change hitbox based on what player is doing
+		// change hitbox based on what players are doing
 		fighter.width = hbxH[currHbxH][0];
 		fighter.height = hbxH[currHbxH][1];
 		
@@ -121,7 +141,6 @@ public class GamePanel extends JPanel implements ActionListener{
 		if (backs[1].x+defX2>=0&&backs[1].x+defX2<=1280-256){
 			backs[1].x += defX2;
 		}
-		
 		
 		// jumping
 		if (jump) {
@@ -150,14 +169,9 @@ public class GamePanel extends JPanel implements ActionListener{
 			jumpCd2--;
 		}
 		
-		g.setColor(Color.green);
-		g.fillRect(backs[0].x, backs[0].y, 256, 256);
-		g.fillRect(backs[1].x, backs[1].y, 256, 256);
-		
 		// change hitbox x and y based on where the images are
 		if (left) {
-			fighter.x = backs[0].x+backs[0].width-hbxH[currHbxH][2]-fighter.width;
-			
+			fighter.x = backs[0].x+backs[0].width-hbxH[currHbxH][2]-fighter.width;	
 		} else {
 			fighter.x = backs[0].x+hbxH[currHbxH][2];
 		}
@@ -171,17 +185,6 @@ public class GamePanel extends JPanel implements ActionListener{
 		
 		fighter.y = backs[0].y+hbxH[currHbxH][3];
 		dummy.y = backs[1].y+hbxC[currHbxC][3];
-		
-		// duck
-		if (duck) {
-			fighter.height /= 2;
-			fighter.y = 720-fighter.height;
-		} 
-		
-		if (duck2) {
-			dummy.height /= 2;
-			dummy.y = 720-dummy.height;
-		} 
 		
 		// hp and energy
 		g.setColor(col[0]);
@@ -238,39 +241,49 @@ public class GamePanel extends JPanel implements ActionListener{
 		if (atking) {
 			if (atkTicks==0) {
 				if (atks[up].intersects(dummy)&&AllOutScrap.blnS) {
-					backs[1].x = fighter.x > dummy.x ? Math.max(0, backs[1].x-(1000/pclient.intpweight)) : Math.min(backs[1].x+(1000/pclient.intpweight), 1280-256);
+					kb = true;
 					if (!done) pclient.intchealth -= phost.intpattack;
 					if (phost.intcenergy!=50) phost.intcenergy += 5;
-					AllOutScrap.ssm.sendText("knockback"+AllOutScrap.strSep+"0");
 				}
 			}
 			if (atkTicks<10) {
+				if (kb) {
+					backs[1].x = fighter.x > dummy.x ? Math.max(0, backs[1].x-(1000/pclient.intpweight/10)) : Math.min(backs[1].x+(1000/pclient.intpweight/10), 1280-256);
+					currHbxC = 6;
+					AllOutScrap.ssm.sendText("knockback"+AllOutScrap.strSep+"0");
+				}
 				g.setColor(Color.blue);
 				g.fillRect(atks[up].x, atks[up].y, atks[up].width, atks[up].height);
 			} else if (atkTicks==10) {
 				atkTicks=-1;
 				atking = false;
+				kb = false;
 				atkCd=40;
 			}
 			atkTicks++;
 		} else if (atkCd>0) {
 			atkCd--;
 		}
-		
 		if (atking2) {
 			if (atkTicks2==0) {
 				if (atks2[up2].intersects(fighter)&&AllOutScrap.blnS) {
-					backs[0].x = fighter.x < dummy.x ? Math.max(0, backs[0].x-(1000/phost.intpweight)) : Math.min(backs[0].x+(1000/phost.intpweight), 1280-256);
+					kb2 = true;
 					if (!done) phost.intchealth -= pclient.intpattack;
 					if (pclient.intcenergy!=50) pclient.intcenergy += 5;
 				}
 			}
 			if (atkTicks2<10) {
+				if (kb2) {
+					backs[0].x = fighter.x < dummy.x ? Math.max(0, backs[0].x-(1000/phost.intpweight/10)) : Math.min(backs[0].x+(1000/phost.intpweight/10), 1280-256);
+					currHbxH = 6;
+					AllOutScrap.ssm.sendText("knockback"+AllOutScrap.strSep+"1");
+				}
 				g.setColor(Color.blue);
 				g.fillRect(atks2[up2].x, atks2[up2].y, atks2[up2].width, atks2[up2].height);
 			} else if (atkTicks2==10) {
 				atkTicks2=-1;
 				atking2 = false;
+				kb2 = false;
 				atkCd2=40;
 			}
 			atkTicks2++;
@@ -283,17 +296,22 @@ public class GamePanel extends JPanel implements ActionListener{
 				if (atks[1].intersects(dummy)&&AllOutScrap.blnS) {
 					phost.intcenergy = 0;
 					if (!done) pclient.intchealth -= phost.intpattack*3;
-					backs[1].x = fighter.x > dummy.x ? Math.max(0, backs[1].x-(3000/pclient.intpweight)) : Math.min(backs[1].x+(3000/pclient.intpweight), 1280-256);
-					AllOutScrap.ssm.sendText("knockback"+AllOutScrap.strSep+"1");
+					kb = true;
 				}
 			} 
 			// show attack on screen
 			if (ultTicks<40) {
+				if (kb) {
+					backs[1].x = fighter.x > dummy.x ? Math.max(0, backs[1].x-(3000/pclient.intpweight/40)) : Math.min(backs[1].x+(3000/pclient.intpweight/40), 1280-256);
+					currHbxC = 6;
+					AllOutScrap.ssm.sendText("knockback"+AllOutScrap.strSep+"0");
+				}
 				g.setColor(Color.blue);
 				g.fillRect(atks[1].x, atks[1].y, atks[1].width, atks[1].height);
 			} else if (ultTicks==40) {
 				ultTicks = -1;
 				ult = false;
+				kb = false;
 			}
 			ultTicks++;
 		}
@@ -303,16 +321,22 @@ public class GamePanel extends JPanel implements ActionListener{
 				if (atks2[1].intersects(fighter)&&AllOutScrap.blnS) {
 					pclient.intcenergy = 0;
 					if (!done) phost.intchealth -= pclient.intpattack*3;
-					backs[0].x = fighter.x < dummy.x ? Math.max(0, backs[0].x-(3000/phost.intpweight)) : Math.min(backs[0].x+(3000/phost.intpweight), 1280-256);
+					kb = true;
 				}
 			} 
 			// show attack on screen
 			if (ultTicks2<40) {
+				if (kb2) {
+					backs[0].x = fighter.x < dummy.x ? Math.max(0, backs[0].x-(3000/phost.intpweight/40)) : Math.min(backs[0].x+(3000/phost.intpweight/40), 1280-256);
+					currHbxH = 6;
+					AllOutScrap.ssm.sendText("knockback"+AllOutScrap.strSep+"1");
+				}
 				g.setColor(Color.blue);
 				g.fillRect(atks2[1].x, atks2[1].y, atks2[1].width, atks2[1].height);
 			} else if (ultTicks2==40) {
 				ultTicks2 = -1;
 				ult2 = false;
+				kb2 = false;
 			}
 			ultTicks2++;
 		}
@@ -325,10 +349,11 @@ public class GamePanel extends JPanel implements ActionListener{
 				if (phost.intchealth < pclient.intchealth) {
 					winner = pclient.strplayername;
 					pclient.introunds++;
+					currHbxH = 7;
 				} else {
 					winner = phost.strplayername;
 					phost.introunds++;
-					
+					currHbxC = 7;
 				}
 				winners.add(winner);
 				times.add(time.getDelay()*1.0*startTicks/1000.0);
@@ -339,19 +364,27 @@ public class GamePanel extends JPanel implements ActionListener{
 				done = true;
 			}
 		} 
+		
 		if (done) {
-			g.drawImage(end, 0, 0, null);
 			g.setColor(Color.white);
 			g.setFont(winlbl);
 			String toScreen = AllOutScrap.blnS ? winner+" has won the round! Press e to start next round." : winner+" has won the round! Waiting for server to start next round.";
 			if (phost.introunds==serieswin||pclient.introunds==serieswin) {
 				toScreen = AllOutScrap.blnS ? winner+" has won the game! Press e to return to main menu." : winner+" has won the game! Waiting for server to close the lobby.";
 			}
+			if (phost.intchealth < pclient.intchealth) {
+				currHbxH = 7;
+			} else {
+				currHbxC = 7;
+			}
+			g.drawImage(pSprites[currHbxH], backs[0].x, backs[0].y, null);
+			g.drawImage(cSprites[currHbxC], backs[1].x, backs[1].y, null);
+			g.drawImage(end, 0, 0, null);
 			g.drawString(toScreen, 350, 350);
+		} else {
+			g.drawImage(pSprites[currHbxH], backs[0].x, backs[0].y, null);
+			g.drawImage(cSprites[currHbxC], backs[1].x, backs[1].y, null);
 		}
-	}
-	
-	public void loadData(String[][] data) {
 		
 	}
 	
@@ -420,6 +453,15 @@ public class GamePanel extends JPanel implements ActionListener{
 		} catch (FontFormatException e){
 		} catch (IOException e){
 		}
+		
+		loadImages("moby", 0);
+		loadImages("scorp", 2);
+	}
+	
+	public void loadImages(String strPrefix, int intRow) {
+		for (int intC=0;intC<8;intC++) {
+			sprites[intRow][intC] = img(strPrefix+intC+".png");
+		} 
 	}
 
 	@Override
