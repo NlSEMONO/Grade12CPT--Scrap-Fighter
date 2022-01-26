@@ -17,14 +17,15 @@ public class MenuPanel extends JPanel implements ActionListener, ChangeListener{
 	
 	JTextField usernamefield = new JTextField("Username Goes Here");
 	
-	JTextField ipfield = new JTextField("127.0.0.1");
+	JTextField ipfield = new JTextField("localhost");
 	JTextField portfield = new JTextField("9112");
 	JTextField chatfield = new JTextField("Chat Text Goes Here");
-	JSlider theslider = new JSlider (SwingConstants.HORIZONTAL,1,10,5);
-	JLabel thelabel = new JLabel("Rounds");
+	JSlider theslider = new JSlider (SwingConstants.HORIZONTAL,1,9,3);
+	JLabel thelabel = new JLabel("Wins: "+theslider.getValue());
 	JTextArea thetxtarea = new JTextArea("Chat Area!!!");
 	JScrollPane thescroll = new JScrollPane(thetxtarea);
-	
+	JButton randomComponent = new JButton("don't click me");
+		
 	//combine mouse x and y into one point
 	Point mousePos = new Point(640,360);
 	int pXDtarg = 0;
@@ -42,6 +43,7 @@ public class MenuPanel extends JPanel implements ActionListener, ChangeListener{
 	Rectangle dummy = new Rectangle(1280/4*3, 720-100, 50, 100);
 	Rectangle[] atks = new Rectangle[2];
 	phButt[] select = new phButt[4];
+	JLabel[][] highs = new JLabel[15][2];
 	
 	int defY = 0;
 	int defX = 0;
@@ -50,7 +52,8 @@ public class MenuPanel extends JPanel implements ActionListener, ChangeListener{
 	int up = 0;
 	int selected = -1;
 	int hovered = -1;
-	
+	int otherselected = -1;
+		
 	int lastClick = -1;
 	int atkTicks = 0;
 	int atkCd = 0;
@@ -70,6 +73,7 @@ public class MenuPanel extends JPanel implements ActionListener, ChangeListener{
 	String ipaddress;
 	JColorChooser thecolchooser = new JColorChooser();
 	
+	
 	//methods
 	public void actionPerformed(ActionEvent evt){
 		if (evt.getSource() == thetimer){
@@ -81,7 +85,7 @@ public class MenuPanel extends JPanel implements ActionListener, ChangeListener{
 		if (evt.getSource() == theslider){
 			int intValue = theslider.getValue();
 			System.out.println(intValue);
-			thelabel.setText(""+intValue);
+			thelabel.setText("Wins: "+intValue);
 			numrounds = intValue;
 		}
 	}	
@@ -192,17 +196,24 @@ public class MenuPanel extends JPanel implements ActionListener, ChangeListener{
 				atkCd--;
 			}
 		} 
-		// bottom right on main menu
+		// bottom right on main menu (credits screen)
 		else if (lastClick==2) {
 			menudraw.drawImage(cred, -pXDist, 828-pYDist, null);
 		} 
 		
-		// bottom left on main menu
+		// bottom left on main menu (high scores)
 		else if (lastClick==4) {
 			menudraw.setColor(Color.black);
 			menudraw.drawString("High scores (fastest round win in (s))", -1440-(int)(pXDist*1.25), 50-(int)(pYDist*1.25));
 			menudraw.drawString("Username", -1790-(int)(pXDist*1.25), 100-(int)(pYDist*1.25));
 			menudraw.drawString("Time (s)", -810-(int)(pXDist*1.25), 100-(int)(pYDist*1.25));
+			
+			// JLabels for high scorers and their times
+			for (int intC=0;intC<AllOutScrap.highscores.size();intC++) {
+				menudraw.drawString(AllOutScrap.highscores.get(intC)[0], -1790-(int)(pXDist*1.25), 100+intC*30+40-(int)(pYDist*1.25));
+				menudraw.drawString(AllOutScrap.highscores.get(intC)[1], -810-(int)(pXDist*1.25), 100+intC*30+40-(int)(pYDist*1.25));
+				
+			}
 		}
 		
 		// host game button & join game button
@@ -214,9 +225,20 @@ public class MenuPanel extends JPanel implements ActionListener, ChangeListener{
 					cameraPos = select[i].pwp;
 					retriggerCatch = true;
 					
-					// find which button was clicked
-					selected = selected == i ? -1 : i;
-					hovered = -1;
+					// find which button was clicked, if the character was already selected or the opponent selected it, reset the selection
+					if (AllOutScrap.ssm!=null) {
+						if (AllOutScrap.connected) {
+							selected = (selected == i || (otherselected == i && otherselected!=-1)) ? -1 : i;
+							hovered = -1;
+							if (AllOutScrap.blnS) System.out.println(selected);
+							AllOutScrap.ssm.sendText("choose"+AllOutScrap.strSep+selected);
+						} else {
+							thetxtarea.append("\nWait for another player to join your room before selecting a character.");
+						}
+						
+					} else  {
+						thetxtarea.append("\nJoin/create a room before selecting a character");
+					}
 				} else if (!mouseDown) {
 					retriggerCatch = false;
 				} 
@@ -240,19 +262,19 @@ public class MenuPanel extends JPanel implements ActionListener, ChangeListener{
 				menudraw.drawImage(selectImg[0], 50+(200*(hovered%2))-(int)(pXDist*1.25), -985+(200*(hovered/2))-(int)(pYDist*1.25), null);
 			}
 			
+			// show what opponent chose
+			if (otherselected!=-1) menudraw.drawImage(selectImg[1], 50+(200*(otherselected%2))-(int)(pXDist*1.25), -985+(200*(otherselected/2))-(int)(pYDist*1.25), null);
+			
 			AllOutScrap.blnS = lastClick==0 ? true : false;
-			if (AllOutScrap.ssm==null) {
-				if (AllOutScrap.blnS) AllOutScrap.makeServer();
-				else AllOutScrap.makeClient("localhost"); 
-			} 
 			
 			ipfield.setEditable(true);
-			ipfield.setVisible(true);
+			if (!AllOutScrap.blnS) ipfield.setVisible(true);
 			chatfield.setEditable(true);
 			chatfield.setVisible(true);
 			usernamefield.setEditable(true);
 			usernamefield.setVisible(true);
-			theslider.setVisible(true);
+			if (AllOutScrap.blnS) theslider.setVisible(true);
+			if (!AllOutScrap.blnS) thelabel.setVisible(false);
 			
 			if (AllOutScrap.blnS == true){
 				buttons[11].setLocation(250-(int)(pXDist*1.5),-622-(int)(pYDist*1.5));	//croom Button
@@ -279,18 +301,46 @@ public class MenuPanel extends JPanel implements ActionListener, ChangeListener{
 		} else if (lastClick == 14){
 			lastClick = AllOutScrap.blnS ? 0 : 1;
 			thetxtarea.append("\n" + usernamefield.getText() + ": " + chatfield.getText());
-		} else if (lastClick == 9){
+			AllOutScrap.ssm.sendText("chat"+AllOutScrap.strSep+chatfield.getText());
+		// ready up if server/client is connected
+		} else if (lastClick == 9&&AllOutScrap.ssm!=null){
 			lastClick = AllOutScrap.blnS ? 0 : 1;
 			if (AllOutScrap.blnS == true){
-				AllOutScrap.ready[0] = true;
+				AllOutScrap.locked[0] = true;
+				AllOutScrap.toGame();
 			}else{
-				AllOutScrap.ready[1] = true;
+				AllOutScrap.locked[1] = true;
+				AllOutScrap.ssm.sendText("ready");
 			}
+		// color chooser for healthbar
 		} else if (lastClick == 10){
-			Color thecolor = thecolchooser.showDialog(themenucol, "Colour Chooser", new Color(0,0,0));
-			AllOutScrap.rgb[0] = thecolor.getRed());
-			AllOutScrap.rgb[1] = thecolor.getGreen());
-			AllOutScrap.rgb[2] = thecolor.getBlue());
+			lastClick = AllOutScrap.blnS ? 0 : 1;
+			Color thecolor = thecolchooser.showDialog(null, "Colour Chooser", new Color(255,0,0));
+			AllOutScrap.rgb[0] = thecolor.getRed();
+			AllOutScrap.rgb[1] = thecolor.getGreen();
+			AllOutScrap.rgb[2] = thecolor.getBlue();
+		// create room button
+		} else if (lastClick==11) {
+			lastClick = 0;
+			AllOutScrap.makeServer();
+			usernamefield.setEnabled(false);
+		// join room button
+		} else if (lastClick==12) {
+			lastClick = 1;
+			AllOutScrap.makeClient(ipfield.getText());
+			AllOutScrap.ssm.sendText("connect"+AllOutScrap.strSep+usernamefield.getText());
+			usernamefield.setEnabled(false);
+			ipfield.setEnabled(false);
+			AllOutScrap.connected = true;
+			AllOutScrap.strUsers[1] = usernamefield.getText();
+		// leave room button
+		} else if (lastClick==13&&AllOutScrap.ssm!=null) {
+			lastClick = 1;
+			AllOutScrap.ssm.sendText("disconnect");
+			usernamefield.setEnabled(true);
+			usernamefield.setEnabled(true);
+			AllOutScrap.ssm = null;
+			AllOutScrap.connected = false;
 		}
 		
 		
@@ -374,8 +424,18 @@ public class MenuPanel extends JPanel implements ActionListener, ChangeListener{
 		
 		usernamefield.setSize(671,80);
 		//usernamefield.setHorizontalAlignment(JTextField.CENTER);
-		Font font1 = new Font("SansSerif", Font.PLAIN, 30);
-		usernamefield.setFont(font1);
+		
+		Font font1 = new Font("SansSerif", Font.PLAIN, 30), font2;
+		
+		try {
+			font1 = Font.createFont(Font.PLAIN, this.getClass().getResourceAsStream("open-sans.regular.ttf"));
+			font2 = font1.deriveFont(Font.PLAIN, 30);
+			usernamefield.setFont(font2);
+		} catch (Exception e) {
+			font2 = new Font("SansSerif", Font.PLAIN, 30);
+		}
+		usernamefield.setFont(font2);
+		
 		usernamefield.setEditable(false);
 		usernamefield.setVisible(false);
 		add(usernamefield);
@@ -385,6 +445,14 @@ public class MenuPanel extends JPanel implements ActionListener, ChangeListener{
 		theslider.addChangeListener(this);
 		add(theslider);
 		
+		try {
+			font2 = font1.deriveFont(Font.PLAIN, 15);
+		} catch (Exception e) {
+			font2 = new Font("SansSerif", Font.PLAIN, 15);
+		}
+		
+		thelabel.setFont(font2);
+		
 		thelabel.setSize(66, 50);
 		thelabel.setHorizontalAlignment(JTextField.CENTER);
 		add(thelabel);
@@ -393,6 +461,22 @@ public class MenuPanel extends JPanel implements ActionListener, ChangeListener{
 		thescroll.setSize(284,523);
 		add(thescroll);
 		//multi-line
+		
+		
+		try {
+			font2 = font1.deriveFont(Font.PLAIN, 20);
+		} catch (Exception e) {
+			font2 = new Font("SansSerif", Font.PLAIN, 20);
+		}
+		
+		for (int intC=0;intC<15;intC++) {
+			for (int intC2=0;intC2<2;intC2++) {
+				highs[intC][intC2] = new JLabel();
+				if (intC2==1) highs[intC][intC2].setSize(100, 30);
+				else highs[intC][intC2].setSize(500, 30);
+				highs[intC][intC2].setFont(font2);
+			}
+		}
 		
 		AllOutScrap.theframe.requestFocus();
 		
@@ -408,7 +492,7 @@ public class MenuPanel extends JPanel implements ActionListener, ChangeListener{
 		selectImg[1] = img("otherselect.png");
 		selectImg[2] = img("select.png");
 		
-		
-		
+		randomComponent.setVisible(false);
+		add(randomComponent);
 	}
 }

@@ -9,6 +9,7 @@ import java.awt.event.*;
 
 public class GamePanel extends JPanel implements ActionListener{
 	Timer time = new Timer(1000/80, this);
+	ArrayList<String> winners = new ArrayList<>();
 	ArrayList<Double> times = new ArrayList<>();
 	Color[] col = new Color[3];
 	Color backCol = Color.white;
@@ -36,7 +37,7 @@ public class GamePanel extends JPanel implements ActionListener{
 	int currAtkH = 0;
 	int currAtkC = 0;
 	
-	int jumpCd = 0, jumpCd2 = 0;
+	int jumpCd = 0, jumpCd2 = 0, startTicks = 0;
 	
 	// Rectangle ultRect = new Rectangle(0, 0, 0, 0), ultRect2 = new Rectangle(0, 0, 0, 0);
 	Rectangle[] backs = new Rectangle[2];
@@ -327,7 +328,10 @@ public class GamePanel extends JPanel implements ActionListener{
 				} else {
 					winner = phost.strplayername;
 					phost.introunds++;
+					
 				}
+				winners.add(winner);
+				times.add(time.getDelay()*1.0*startTicks/1000.0);
 				
 				AllOutScrap.sendUpdate();
 				if (phost.introunds==serieswin||pclient.introunds==serieswin) AllOutScrap.ssm.sendText("gameEnd"+strSep+winner+strSep+phost.introunds+strSep+pclient.introunds);
@@ -363,6 +367,7 @@ public class GamePanel extends JPanel implements ActionListener{
 		
 		AllOutScrap.sendUpdate();
 		AllOutScrap.ssm.sendText("nextRound");
+		startTicks = 0;
 	}
 	
 	public BufferedImage img(String fileName) {
@@ -424,6 +429,7 @@ public class GamePanel extends JPanel implements ActionListener{
 			if (!mess.isVisible()) chatTicks++;
 			// chat stays for 5 seconds if you don't type
 			if (chatTicks*time.getDelay()>=5000) scr.setVisible(false);
+			startTicks++;
 		} else if (e.getSource()==mess&&!mess.getText().equals("")) {
 			chatTicks = 0;
 			chatText = AllOutScrap.blnS ? phost.strplayername : pclient.strplayername;

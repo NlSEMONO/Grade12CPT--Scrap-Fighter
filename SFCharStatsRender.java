@@ -7,6 +7,7 @@ import java.awt.event.*;
 import javax.swing.event.*;
 import java.util.Random;
 import java.util.Scanner;
+import java.util.ArrayList;
 import java.awt.*;
 import java.awt.image.*;
 
@@ -44,11 +45,30 @@ public class SFCharStatsRender{
 				}
 			}
 		
-		}	
+		}
 		
 		//Returns the 2D array
 		return dataFile;
 		
+	}
+	
+	public ArrayList<String[]> highscores() {
+		
+		ArrayList<String[]> ret = new ArrayList<>();
+			
+		try {
+			BufferedReader br = new BufferedReader(new FileReader("winners.txt"));
+			for (int intCount=0;intCount<30;intCount++) {
+				String in = br.readLine();
+				if (in!=null) {
+					if (intCount%2==0) ret.add(new String[2]); 
+					ret.get(intCount/2)[intCount%2] = in;
+				}
+				else break;
+			}			
+		} catch (IOException e) {
+		}
+		return ret;
 	}
 	
 	public SFCharStatsRender(){

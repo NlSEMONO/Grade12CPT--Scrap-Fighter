@@ -2,6 +2,8 @@ import java.awt.*;
 import javax.swing.*;
 import java.awt.event.*;
 import javax.swing.event.*;
+import java.io.*;
+import java.util.ArrayList;
 
 public class AllOutScrap implements ActionListener,WindowListener, KeyListener, MouseListener, MouseMotionListener{
 	
@@ -26,6 +28,12 @@ public class AllOutScrap implements ActionListener,WindowListener, KeyListener, 
 	static boolean[] locked = new boolean[2];
 	static int[] chars = new int[2];
 	static boolean blnS;
+	static boolean connected = false;
+	
+	static ArrayList<String[]> highscores = new ArrayList<>();
+	static boolean[] ready = new boolean[2];
+	static int[] rgb = new int[3];
+	static String[] strUsers = new String[2];
 	
 	//methods
 	public void actionPerformed(ActionEvent evt){
@@ -97,6 +105,11 @@ public class AllOutScrap implements ActionListener,WindowListener, KeyListener, 
 	
 	public void keyPressed(KeyEvent evt){
 		if (!inGame) {
+			
+			if (evt.getKeyChar()=='z') {
+				sortScores();
+			}
+			
 			themenu.atking = false;
 			if (evt.getKeyChar()=='q'||evt.getKeyChar()=='Q') {
 				// high attack
@@ -109,22 +122,7 @@ public class AllOutScrap implements ActionListener,WindowListener, KeyListener, 
 			} else if (evt.getKeyChar()==' ') {
 				// ult 
 				
-				// readies you up for now
-				if (!blnS) {
-					if (themenu.selected!=-1) {
-						ssm.sendText("choose"+strSep+themenu.selected);
-						ssm.sendText("ready");
-						chars[1] = themenu.selected;
-					}
-				} else {
-					if (themenu.selected!=-1) {
-						locked[0] = true;
-						chars[0] = themenu.selected;
-						ssm.sendText("choose"+strSep+themenu.selected);
-						System.out.println(locked[0] +" "+locked[1]);
-						this.toGame();
-					}
-				}
+				
 			} 
 			if (evt.getKeyChar()=='w' || evt.getKeyChar()=='W') {
 				if (!themenu.duck) themenu.jump = true;
@@ -170,7 +168,38 @@ public class AllOutScrap implements ActionListener,WindowListener, KeyListener, 
 				if (blnS) {
 					if (game.done) {
 						game.done = false;
-						if (game.phost.introunds==game.serieswin||game.pclient.introunds==game.serieswin) toMenu();
+						if (game.phost.introunds==game.serieswin||game.pclient.introunds==game.serieswin) {
+							toMenu();
+							
+							for (int intC=0;intC<game.times.size();intC++) {
+								if (highscores.size()<15) {
+									String[] add = {game.winners.get(intC), game.times.get(intC).toString()};
+									highscores.add(add);
+									sortScores();
+								} else if (game.times.get(intC)>Double.parseDouble(highscores.get(highscores.size()-1)[1])) {
+									highscores.remove(highscores.size()-1);
+									String[] add = {game.winners.get(intC), game.times.get(intC).toString()};
+									highscores.add(add);
+									sortScores();
+								} 
+							}
+							
+							 try {
+								PrintWriter file = new PrintWriter(new FileWriter("winners.txt"));
+								
+								for (int intCount = 0; intCount<highscores.size(); intCount++) {
+									file.println(highscores.get(intCount)[0]);
+									file.println(highscores.get(intCount)[1]);
+								}
+								
+								file.close();
+								
+								System.out.println("successfully wrote to file");
+							} catch (IOException e){
+								System.out.println(e.toString());
+							} 
+							 
+						} 
 						else game.nextRound();
 					} else {
 						if (game.atkCd<1) game.atking = true;
@@ -284,15 +313,18 @@ public class AllOutScrap implements ActionListener,WindowListener, KeyListener, 
 		themenu.lastClick = 5;
 		themenu.cameraPos = new Point(0, 0);
 		inGame = false;
+		ssm = null;
 	}
 	
 	public static void toGame() {
-		if (locked[1]&&locked[0]&&blnS) {
+		// server tells client to start the game if characters are chosen and both players are readied up
+		if (locked[1]&&locked[0]&&blnS&&chars[0]!=-1&&chars[1]!=-1) {
 			theframe.setContentPane(game);
 			theframe.pack();
 			inGame = true;
 			ssm.sendText("choose"+strSep+chars[0]);
-			ssm.sendText("startGame");
+			game.serieswin = themenu.theslider.getValue();
+			ssm.sendText("startGame"+strSep+game.serieswin);
 			
 			// load character hitboxes into game
 			System.out.println(chars[0]+" "+chars[1]);
@@ -300,8 +332,23 @@ public class AllOutScrap implements ActionListener,WindowListener, KeyListener, 
 			for (int i=0;i<4;i++) for (int j=0;j<4;j++) game.hbxC[i][j] = Integer.parseInt(hbxes[4*chars[1]+i][j]); 
 			for (int i=0;i<3;i++) for (int j=0;j<4;j++) game.atkhbxH[i][j] = Integer.parseInt(atkhbxes[3*chars[0]+i][j]); 
 			for (int i=0;i<3;i++) for (int j=0;j<4;j++) game.atkhbxC[i][j] = Integer.parseInt(atkhbxes[3*chars[1]+i][j]); 
-			
+		// server tells ppl to choose characters if both players are readied up
+		} else if (blnS&&(chars[0]==-1||chars[1]==-1)&&(locked[0]&&locked[1])) {
+			String send = "missing"+strSep;
+			themenu.thetxtarea.append("\n The following players must select a character:");
+			if (chars[0]==-1){
+				send+="0";
+				locked[0] = false;
+				themenu.thetxtarea.append("\n"+strUsers[0]);
+			} 
+			if (chars[1]==-1){
+				send+=strSep+"1";
+				locked[1] = false;
+				themenu.thetxtarea.append("\n"+strUsers[1]);
+			}
+			ssm.sendText(send);
 		} else if (!blnS) {
+			chars[1] = themenu.selected;
 			theframe.setContentPane(game);
 			theframe.pack();
 			inGame = true;
@@ -312,6 +359,11 @@ public class AllOutScrap implements ActionListener,WindowListener, KeyListener, 
 			for (int i=0;i<3;i++) for (int j=0;j<4;j++) game.atkhbxH[i][j] = Integer.parseInt(atkhbxes[3*chars[0]+i][j]); 
 			for (int i=0;i<3;i++) for (int j=0;j<4;j++) game.atkhbxC[i][j] = Integer.parseInt(atkhbxes[3*chars[1]+i][j]); 
 		}
+		
+		
+		// save usernames in server client objects
+		game.phost.strplayername = strUsers[0];
+		game.pclient.strplayername = strUsers[1];
 		
 		// load character stats into player class
 		game.phost.intpattack = Integer.parseInt(statistics[chars[0]][0]);
@@ -328,6 +380,9 @@ public class AllOutScrap implements ActionListener,WindowListener, KeyListener, 
 		game.pclient.intchealth = game.pclient.intphealth;
 		game.phost.intcenergy = 0;
 		game.pclient.intcenergy = 0;
+		
+		// change healthbar color 
+		game.col[0] = new Color(rgb[0], rgb[1], rgb[2]);
 	}
 	
 	public static void sendUpdate() {
@@ -388,8 +443,7 @@ public class AllOutScrap implements ActionListener,WindowListener, KeyListener, 
 					if (!game.jump2) game.tme2 = 0;
 				} else if (strMess[0].equals("choose")) {
 					chars[1] = Integer.parseInt(strMess[1]);
-				} else if (strMess[0].equals("disconnect")) {
-					
+					themenu.otherselected = chars[1];
 				} else if (strMess[0].equals("attack")) {
 					game.atking2 = true;
 					game.up2 = Integer.parseInt(strMess[1]);
@@ -398,7 +452,21 @@ public class AllOutScrap implements ActionListener,WindowListener, KeyListener, 
 						game.chat.append(strMess[1]+": "+strMess[2]+"\n");
 						game.scr.setVisible(true);
 						game.chatTicks=0;
+					} else {
+						themenu.thetxtarea.append("\n"+strUsers[1]+": "+strMess[1]);
 					}
+				} else if (strMess[0].equals("connect")){ 
+					if (!connected) {
+						connected = true;
+						strUsers[1] = strMess[1];
+						strUsers[0] = themenu.usernamefield.getText();
+						ssm.sendText("connect"+strSep+strUsers[0]);
+					} else  {
+						ssm.sendText("disconnect"+strSep+strMess[1]);
+					}
+					
+				} else if (strMess[0].equals("disconnect")) {
+					connected = false;
 				} 
 			}
 		});
@@ -412,6 +480,11 @@ public class AllOutScrap implements ActionListener,WindowListener, KeyListener, 
 				String[] strMess = ssm.readText().split(strSep);
 				if (strMess[0].equals("startGame")) {
 					toGame();
+					game.serieswin = Integer.parseInt(strMess[1]);
+				} else if (strMess[0].equals("disconnect")&&strMess[1].equals(strUsers[1])) {
+					ssm = null;
+					themenu.usernamefield.setEnabled(true);
+					themenu.thetxtarea.append("\n"+"That lobby is already full. Please try joining another lobby.");
 				} else if (strMess[0].equals("update")) {
 					int[] data = new int[strMess.length];
 					for (int i=1;i<strMess.length;i++){
@@ -429,8 +502,8 @@ public class AllOutScrap implements ActionListener,WindowListener, KeyListener, 
 					game.ult = data[12]==0 ? false: true;
 					if (!game.jump) game.tme = 0;
 				} else if (strMess[0].equals("choose")) {
-					System.out.println(strMess[1]);
 					chars[0] = Integer.parseInt(strMess[1]);
+					themenu.otherselected = chars[0];
 				} else if (strMess[0].equals("attack")) {
 					game.up = Integer.parseInt(strMess[1]);
 					game.atking = true;
@@ -439,6 +512,8 @@ public class AllOutScrap implements ActionListener,WindowListener, KeyListener, 
 						game.chat.append(strMess[1]+": "+strMess[2]+"\n");
 						game.scr.setVisible(true);
 						game.chatTicks=0;
+					}else {
+						themenu.thetxtarea.append("\n"+strUsers[0]+": "+strMess[1]);
 					}
 				} else if (strMess[0].equals("knockback")) {
 					int type = Integer.parseInt(strMess[1]);
@@ -462,11 +537,38 @@ public class AllOutScrap implements ActionListener,WindowListener, KeyListener, 
 					themenu.lastClick = 5;
 					themenu.cameraPos = new Point(0, 0);
 					inGame = false;
+					ssm = null;
+				} else if (strMess[0].equals("connect")){ 
+					strUsers[0] = strMess[1];
+				} else if (strMess[0].equals("missing")) {
+					themenu.thetxtarea.append("\n The following players must select a character:");
+					if (strMess.length<3) {
+						themenu.thetxtarea.append("\n"+strUsers[Integer.parseInt(strMess[1])]);
+						locked[Integer.parseInt(strMess[1])] = false;
+					} else {
+						themenu.thetxtarea.append("\n"+strUsers[Integer.parseInt(strMess[1])]);
+						themenu.thetxtarea.append("\n"+strUsers[Integer.parseInt(strMess[2])]);
+						locked[Integer.parseInt(strMess[1])] = false;
+						locked[Integer.parseInt(strMess[2])] = false;
+					}
 				}
 			}
 		});
 		ssm.connect();
 	} 
+	
+	public void sortScores() {
+		for (int intC=0;intC<highscores.size();intC++) {
+			for (int intC2=0;intC2<highscores.size()-1;intC2++){
+				double left = Double.parseDouble(highscores.get(intC2)[1]), right = Double.parseDouble(highscores.get(intC2+1)[1]);
+				if (left>right) {
+					String[] temp = highscores.get(intC2);
+					highscores.remove(intC2);
+					highscores.add(intC2+1, temp);
+				}
+			}
+		}
+	}
 	
 	//constructor
 	public AllOutScrap(){
@@ -484,6 +586,8 @@ public class AllOutScrap implements ActionListener,WindowListener, KeyListener, 
 		statistics = loader.CharStatsRender("Basic Character Stats - Sheet1.csv", 4, 4);
 		hbxes = loader.CharStatsRender("Main Body Hitbox Stats - Sheet1.csv", 16, 4);
 		atkhbxes = loader.CharStatsRender("High, Low and Ult Hitbox Stats - Sheet1.csv", 12, 4);
+		highscores = loader.highscores();
+		rgb[0] = 255;
 	}
 	
 	//main method
