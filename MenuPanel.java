@@ -404,7 +404,7 @@ public class MenuPanel extends JPanel implements ActionListener, ChangeListener{
 		buttons[11] = new phButt(0,0,355,90,0,828,"CreateButtondef.png","CreateButtonhov.png","CreateButtonprs.png"); 	//croombutton
 		buttons[12] = new phButt(0,0,177,90,0,828,"JoinButtondef.png","JoinButtonhov.png","JoinButtonprs.png"); 	//jroombutton
 		buttons[13] = new phButt(0,0,176,90,0,828,"LeaveButtondef.png","LeaveButtonhov.png","LeaveButtonprs.png");		//lroombutton
-		buttons[14] = new phButt(0,0,71,30,0,828,"SendButtondef.png","SendButtonhov.png","SendButtondprs.png");		//sendbutton 
+		buttons[14] = new phButt(0,0,71,30,0,828,"SendButtondef.png","SendButtonhov.png","SendButtonprs.png");		//sendbutton 
 	
 		
 		ipfield.setSize(355,50);
