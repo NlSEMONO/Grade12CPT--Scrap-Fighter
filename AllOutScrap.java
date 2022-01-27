@@ -176,8 +176,6 @@ public class AllOutScrap implements ActionListener,WindowListener, KeyListener, 
 						game.done = false;
 						// if a game winner has been decided:
 						if (game.phost.introunds==game.serieswin||game.pclient.introunds==game.serieswin) {
-							toMenu();
-							
 							// add game times to high scores if applicable
 							for (int intC=0;intC<game.times.size();intC++) {
 								// if there are less than 15 high scores, add and sort
@@ -186,7 +184,7 @@ public class AllOutScrap implements ActionListener,WindowListener, KeyListener, 
 									highscores.add(add);
 									sortScores();
 								// otherwise, see if lowest high score is beaten out, and sort
-								} else if (game.times.get(intC)>Double.parseDouble(highscores.get(highscores.size()-1)[1])) {
+								} else if (game.times.get(intC)<Double.parseDouble(highscores.get(highscores.size()-1)[1])) {
 									highscores.remove(highscores.size()-1);
 									String[] add = {game.winners.get(intC), game.times.get(intC).toString()};
 									highscores.add(add);
@@ -213,6 +211,9 @@ public class AllOutScrap implements ActionListener,WindowListener, KeyListener, 
 							// clear high score winner and times lists
 							game.times.clear();
 							game.winners.clear();
+							// return to main menu
+							toMenu();
+							game.time.stop();
 						} 
 						// if the a game winner has not been decided, move to the next round
 						else game.nextRound();
@@ -327,13 +328,15 @@ public class AllOutScrap implements ActionListener,WindowListener, KeyListener, 
 	// switch to menu panel, resetting all network related variables
 	public void toMenu() {
 		ssm.sendText("toMenu");
+		locked[0] = false;
+		locked[1] = false;
+		connected = false;
+		ssm.disconnect();
+		ssm = null;
+		// reset and go to menu
+		themenu = new MenuPanel();
 		theframe.setContentPane(themenu);
 		theframe.pack();
-		themenu.lastClick = 5;
-		themenu.cameraPos = new Point(0, 0);
-		inGame = false;
-		ssm = null;
-		connected = false;
 	}
 	
 	// switch to game panel
@@ -341,13 +344,13 @@ public class AllOutScrap implements ActionListener,WindowListener, KeyListener, 
 		theframe.requestFocus();
 		// server tells client to start the game if characters are chosen and both players are readied up, switches to game panel and loads hitboxes
 		if (locked[1]&&locked[0]&&blnS&&chars[0]!=-1&&chars[1]!=-1) {
-			theframe.setContentPane(game);
-			theframe.pack();
 			inGame = true;
 			ssm.sendText("choose"+strSep+chars[0]);
 			game.serieswin = themenu.theslider.getValue();
 			ssm.sendText("startGame"+strSep+game.serieswin);
-			
+			theframe.setContentPane(game);
+			theframe.pack();
+			themenu.thetimer.stop();
 			// load character hitboxes into game
 			for (int i=0;i<8;i++) for (int j=0;j<4;j++) game.hbxH[i][j] = Integer.parseInt(hbxes[8*chars[0]+i][j]); 
 			for (int i=0;i<8;i++) for (int j=0;j<4;j++) game.hbxC[i][j] = Integer.parseInt(hbxes[8*chars[1]+i][j]); 
@@ -373,6 +376,7 @@ public class AllOutScrap implements ActionListener,WindowListener, KeyListener, 
 			chars[1] = themenu.selected;
 			theframe.setContentPane(game);
 			theframe.pack();
+			themenu.thetimer.stop();
 			inGame = true;
 			// load character hitboxes 
 			for (int i=0;i<8;i++) for (int j=0;j<4;j++) game.hbxH[i][j] = Integer.parseInt(hbxes[8*chars[0]+i][j]); 
@@ -410,8 +414,16 @@ public class AllOutScrap implements ActionListener,WindowListener, KeyListener, 
 		game.pSprites2 = game.sprites2[chars[0]];
 		game.cSprites2 = game.sprites2[chars[1]];
 		
-		// make chat visible at start of game
-		game.chatTicks = 0;
+		game.done = false;
+		game.phost.introunds = 0;
+		game.pclient.introunds = 0;
+		game.backs[0].x = 0;
+		game.backs[1].x = 1280-256;
+		game.time.start();
+		game.defX = 0;
+		game.defX2 = 0;
+		game.left = false;
+		game.left2 = true;
 	}
 	
 	// update method for servers (did not want to call this ssm.sendText(...) multiple times) sends player coordinates, health, energy, facing left, ducking, jumping, and ulting for server fighter
@@ -592,15 +604,18 @@ public class AllOutScrap implements ActionListener,WindowListener, KeyListener, 
 					game.winner = strMess[1];
 					game.phost.introunds = Integer.parseInt(strMess[2]);
 					game.pclient.introunds = Integer.parseInt(strMess[3]);
-				// to menu swaps the client to the menu and disconnects them from the network
+				// to menu swaps the client to the menu, disconnects them from the network and resets network variables
 				} else if (strMess[0].equals("toMenu")) {
-					theframe.setContentPane(themenu);
-					theframe.pack();
-					themenu.lastClick = 5;
-					themenu.cameraPos = new Point(0, 0);
-					inGame = false;
+					locked[0] = false;
+					locked[1] = false;
+					connected = false;
 					ssm.disconnect();
 					ssm = null;
+					// reset and go to menu
+					themenu = new MenuPanel();
+					theframe.setContentPane(themenu);
+					theframe.pack();
+					game.time.stop();
 				// connect what the server's username is after the client connects
 				} else if (strMess[0].equals("connect")){ 
 					strUsers[0] = strMess[1];

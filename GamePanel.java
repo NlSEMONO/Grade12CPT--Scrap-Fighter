@@ -263,7 +263,7 @@ public class GamePanel extends JPanel implements ActionListener{
 				if (kb) {
 					backs[1].x = fighter.x > dummy.x ? Math.max(0, backs[1].x-(1000/pclient.intpweight/10)) : Math.min(backs[1].x+(1000/pclient.intpweight/10), 1280-256);
 					currHbxC = 6;
-					AllOutScrap.ssm.sendText("knockback"+AllOutScrap.strSep+"0");
+					if (AllOutScrap.ssm!=null) AllOutScrap.ssm.sendText("knockback"+AllOutScrap.strSep+"0");
 					left2 = fighter.x > dummy.x ? false : true;
 				}
 				// g.setColor(Color.blue);
@@ -367,7 +367,7 @@ public class GamePanel extends JPanel implements ActionListener{
 		
 		// server and client update each other on what their fighters are doing and the new coordinates of the fighters
 		if (AllOutScrap.blnS&&AllOutScrap.ssm!=null) AllOutScrap.sendUpdate(); // the server also sends out health and energy data to the client
-		else AllOutScrap.move();
+		else if (!AllOutScrap.blnS&&AllOutScrap.ssm!=null) AllOutScrap.move();
 		
 		// if an attack just went off, check if the game is over (ie. someone's hp <= 0)
 		if ((atking||atking2||ult||ult2)&&AllOutScrap.blnS&&!done) {

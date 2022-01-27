@@ -331,7 +331,8 @@ public class MenuPanel extends JPanel implements ActionListener, ChangeListener{
 			usernamefield.setEditable(true);
 			usernamefield.setVisible(true);
 			if (AllOutScrap.blnS) theslider.setVisible(true);
-			if (!AllOutScrap.blnS) thelabel.setVisible(false);
+			if (AllOutScrap.blnS) thelabel.setVisible(true);
+			else  thelabel.setVisible(false);
 			colLbl.setVisible(true);
 			if (AllOutScrap.blnS == true){
 				buttons[11].setLocation(250-(int)(pXDist*1.5),-622-(int)(pYDist*1.5));	//croom Button
@@ -405,7 +406,7 @@ public class MenuPanel extends JPanel implements ActionListener, ChangeListener{
 			lastClick = 1;
 			AllOutScrap.ssm.sendText("disconnect");
 			usernamefield.setEnabled(true);
-			usernamefield.setEnabled(true);
+			ipfield.setEnabled(true);
 			AllOutScrap.ssm.disconnect();
 			AllOutScrap.ssm = null;
 			AllOutScrap.connected = false;
@@ -435,6 +436,24 @@ public class MenuPanel extends JPanel implements ActionListener, ChangeListener{
 			System.out.println(e.getMessage());
 		}
 		return null;
+	}
+	
+	public void resetMenu() {
+		// reset fighter select variables
+		ipfield.setEditable(true);
+		ipfield.setVisible(false);
+		chatfield.setEditable(false);
+		chatfield.setVisible(false);
+		usernamefield.setEditable(true);
+		usernamefield.setVisible(false);
+		theslider.setVisible(false);
+		colLbl.setVisible(false);
+		buttons[11].setLocation(10000-(int)(pXDist*1.5),-10000-(int)(pYDist*1.5));	//croom Button
+		buttons[12].setLocation(10000-(int)(pXDist*1.5),-10000-(int)(pYDist*1.5));	//jroom Button
+		buttons[13].setLocation(10000-(int)(pXDist*1.5),-10000-(int)(pYDist*1.5));	//lroom Button
+		selected = -1;
+		hovered = -1;
+		otherselected = -1;
 	}
 
 	//constructor
