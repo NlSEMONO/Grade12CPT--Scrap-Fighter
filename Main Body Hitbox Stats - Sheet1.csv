@@ -4,7 +4,7 @@ Width ,Height,Width Pixels From Top Left,Height Pixels From Top Left,,,
 140,108,23,148,,,(Low Attack)
 147,130,30,126,,,(Ult Attack)
 134,199,64,57,,,(jump)
-122,73,34,183,,,(duck)
+122,73,66,183,,,(duck)
 213,207,43,49,,,(knocked back)
 0,0,15,0,,,(dead)
 105,151,57,122,,Luz,(Idle)

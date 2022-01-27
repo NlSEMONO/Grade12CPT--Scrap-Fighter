@@ -211,6 +211,7 @@ public class GamePanel extends JPanel implements ActionListener{
 		else g.setColor(col[1]);
 		g.fillRect(1280-(int)(5*pclient.intcenergy), 50, 300, 25);
 		
+		/* drawing hitboxes for debugging commented out
 		// enemy 
 		g.setColor(Color.red);
 		g.fillRect(dummy.x, dummy.y, dummy.width, dummy.height);
@@ -218,6 +219,7 @@ public class GamePanel extends JPanel implements ActionListener{
 		// training fighter hitbox
 		g.setColor(Color.black);
 		g.fillRect(fighter.x, fighter.y, fighter.width, fighter.height);
+		*/
 		
 		// attack hitboxes for server and client based on data from an array, which is from a text file
 		atks[0].width = atkhbxH[currAtkH][0];
@@ -264,8 +266,8 @@ public class GamePanel extends JPanel implements ActionListener{
 					AllOutScrap.ssm.sendText("knockback"+AllOutScrap.strSep+"0");
 					left2 = fighter.x > dummy.x ? false : true;
 				}
-				g.setColor(Color.blue);
-				g.fillRect(atks[up].x, atks[up].y, atks[up].width, atks[up].height);
+				// g.setColor(Color.blue);
+				// g.fillRect(atks[up].x, atks[up].y, atks[up].width, atks[up].height);
 			} else if (atkTicks==10) {
 				atkTicks=-1;
 				atking = false;
@@ -294,8 +296,8 @@ public class GamePanel extends JPanel implements ActionListener{
 					AllOutScrap.ssm.sendText("knockback"+AllOutScrap.strSep+"1");
 					left = fighter.x < dummy.x ? false : true;
 				}
-				g.setColor(Color.blue);
-				g.fillRect(atks2[up2].x, atks2[up2].y, atks2[up2].width, atks2[up2].height);
+				// g.setColor(Color.blue);
+				// g.fillRect(atks2[up2].x, atks2[up2].y, atks2[up2].width, atks2[up2].height);
 			} else if (atkTicks2==10) {
 				atkTicks2=-1;
 				atking2 = false;
@@ -325,8 +327,8 @@ public class GamePanel extends JPanel implements ActionListener{
 					AllOutScrap.ssm.sendText("knockback"+AllOutScrap.strSep+"0");
 					left2 = fighter.x > dummy.x ? false : true;
 				}
-				g.setColor(Color.blue);
-				g.fillRect(atks[1].x, atks[1].y, atks[1].width, atks[1].height);
+				// g.setColor(Color.blue);
+				// g.fillRect(atks[1].x, atks[1].y, atks[1].width, atks[1].height);
 			} else if (ultTicks==40) {
 				ultTicks = -1;
 				ult = false;
@@ -353,8 +355,8 @@ public class GamePanel extends JPanel implements ActionListener{
 					AllOutScrap.ssm.sendText("knockback"+AllOutScrap.strSep+"1");
 					left = fighter.x < dummy.x ? false : true;
 				}
-				g.setColor(Color.blue);
-				g.fillRect(atks2[1].x, atks2[1].y, atks2[1].width, atks2[1].height);
+				// g.setColor(Color.blue);
+				// g.fillRect(atks2[1].x, atks2[1].y, atks2[1].width, atks2[1].height);
 			} else if (ultTicks2==40) {
 				ultTicks2 = -1;
 				ult2 = false;
@@ -429,20 +431,43 @@ public class GamePanel extends JPanel implements ActionListener{
 			g.drawImage(end, 0, 0, null);
 			g.drawString(toScreen, 350, 350);
 		} else {
-			// non-corpse sprite drawing is done here 
-			if (left) {
-				if (pSprites2[currHbxH].getWidth()>256) g.drawImage(pSprites2[currHbxH], backs[0].x-256, backs[0].y, null);
-				else g.drawImage(pSprites2[currHbxH], backs[0].x, backs[0].y, null);
-				
-			} else {
-				g.drawImage(pSprites[currHbxH], backs[0].x, backs[0].y, null);
+			// non-corpse sprite drawing is done here (attacking fighters are deprioritized when drawing)
+			if (!atking&&!ult) {
+				if (left) {
+					if (pSprites2[currHbxH].getWidth()>256) g.drawImage(pSprites2[currHbxH], backs[0].x-256, backs[0].y, null);
+					else g.drawImage(pSprites2[currHbxH], backs[0].x, backs[0].y, null);
+					
+				} else {
+					g.drawImage(pSprites[currHbxH], backs[0].x, backs[0].y, null);
+				}
 			}
 			
-			if (left2) {
-				if (cSprites2[currHbxC].getWidth()>256) g.drawImage(cSprites2[currHbxC], backs[1].x-256, backs[1].y, null);
-				else g.drawImage(cSprites2[currHbxC], backs[1].x, backs[1].y, null);
-			} else {
-				g.drawImage(cSprites[currHbxC], backs[1].x, backs[1].y, null);
+			if (!atking2&&!ult2) {
+				if (left2) {
+					if (cSprites2[currHbxC].getWidth()>256) g.drawImage(cSprites2[currHbxC], backs[1].x-256, backs[1].y, null);
+					else g.drawImage(cSprites2[currHbxC], backs[1].x, backs[1].y, null);
+				} else {
+					g.drawImage(cSprites[currHbxC], backs[1].x, backs[1].y, null);
+				}
+			}
+			
+			if (atking||ult) {
+				if (left) {
+					if (pSprites2[currHbxH].getWidth()>256) g.drawImage(pSprites2[currHbxH], backs[0].x-256, backs[0].y, null);
+					else g.drawImage(pSprites2[currHbxH], backs[0].x, backs[0].y, null);
+					
+				} else {
+					g.drawImage(pSprites[currHbxH], backs[0].x, backs[0].y, null);
+				}
+			}
+			
+			if (atking2||ult2) {
+				if (left2) {
+					if (cSprites2[currHbxC].getWidth()>256) g.drawImage(cSprites2[currHbxC], backs[1].x-256, backs[1].y, null);
+					else g.drawImage(cSprites2[currHbxC], backs[1].x, backs[1].y, null);
+				} else {
+					g.drawImage(cSprites[currHbxC], backs[1].x, backs[1].y, null);
+				}
 			}
 		}
 		

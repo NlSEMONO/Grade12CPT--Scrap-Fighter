@@ -80,6 +80,9 @@ public class MenuPanel extends JPanel implements ActionListener, ChangeListener{
 	// health bar colour customizer
 	JColorChooser thecolchooser = new JColorChooser();
 	
+	// fonts used in menu
+	Font font1 = new Font("SansSerif", Font.PLAIN, 30), font2;
+	
 	//methods
 	public void actionPerformed(ActionEvent evt){
 		if (evt.getSource() == thetimer){
@@ -262,6 +265,8 @@ public class MenuPanel extends JPanel implements ActionListener, ChangeListener{
 		
 		// host game button & join game button
 		else if (lastClick==0 || lastClick == 1) {
+			menudraw.setColor(Color.black);
+			menudraw.drawString("CHOOSE YOUR FIGHTER", 500-(int)(pXDist*1.25), -1000-(int)(pYDist*1.25));
 		 // draw character select buttons
 			for (int i=0;i<4;i++) select[i].setLocation(50+(200*(i%2))-(int)(pXDist*1.25), -985+(200*(i/2)-(int)(pYDist*1.25)));
 			for (int i=0;i<4;i++) {
@@ -479,8 +484,6 @@ public class MenuPanel extends JPanel implements ActionListener, ChangeListener{
 		usernamefield.setSize(671,80);
 		//usernamefield.setHorizontalAlignment(JTextField.CENTER);
 		
-		Font font1 = new Font("SansSerif", Font.PLAIN, 30), font2;
-		
 		// make the username field use font inside the .jar file
 		try {
 			font1 = Font.createFont(Font.PLAIN, this.getClass().getResourceAsStream("open-sans.regular.ttf"));
@@ -523,11 +526,12 @@ public class MenuPanel extends JPanel implements ActionListener, ChangeListener{
 		
 		// same idea as lines 485-492
 		try {
-			font2 = font1.deriveFont(Font.PLAIN, 20);
+			font2 = font1.deriveFont(Font.PLAIN, 30);
 		} catch (Exception e) {
-			font2 = new Font("SansSerif", Font.PLAIN, 20);
+			font2 = new Font("SansSerif", Font.PLAIN, 30);
 		}
-		
+		// make menu draw 30px font
+		menudraw.setFont(font2);
 		// initialize high score jlabels
 		for (int intC=0;intC<15;intC++) {
 			for (int intC2=0;intC2<2;intC2++) {
