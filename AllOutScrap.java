@@ -335,6 +335,7 @@ public class AllOutScrap implements ActionListener,WindowListener, KeyListener, 
 		connected = false;
 		ssm.disconnect();
 		ssm = null;
+		inGame = false;
 		// reset and go to menu
 		themenu = new MenuPanel();
 		theframe.setContentPane(themenu);
@@ -624,6 +625,7 @@ public class AllOutScrap implements ActionListener,WindowListener, KeyListener, 
 					connected = false;
 					ssm.disconnect();
 					ssm = null;
+					inGame = false;
 					// reset and go to menu
 					themenu = new MenuPanel();
 					theframe.setContentPane(themenu);
