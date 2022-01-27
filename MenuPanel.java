@@ -16,7 +16,7 @@ public class MenuPanel extends JPanel implements ActionListener, ChangeListener{
 	BufferedImage[] selectImg = new BufferedImage[3]; // fighter selected hovered over, other users's selection and your selection images
 	
 	JTextField usernamefield = new JTextField("Username Goes Here"); // username textfield	
-	JTextField ipfield = new JTextField("localhost"); // ip textfield	
+	JTextField ipfield = new JTextField("IP Address here"); // ip textfield	
 	JTextField portfield = new JTextField("9112");  // port textfield
 	JTextField chatfield = new JTextField("Chat Text Goes Here");  // chat message textfield	
 	JSlider theslider = new JSlider (SwingConstants.HORIZONTAL,1,9,3); // rounds to win slider
@@ -404,6 +404,8 @@ public class MenuPanel extends JPanel implements ActionListener, ChangeListener{
 		// leave room button (disconnects user)
 		} else if (lastClick==13&&AllOutScrap.ssm!=null) {
 			lastClick = 1;
+			selected = -1;
+			otherselected = -1;
 			AllOutScrap.ssm.sendText("disconnect");
 			usernamefield.setEnabled(true);
 			ipfield.setEnabled(true);

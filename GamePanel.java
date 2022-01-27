@@ -386,7 +386,7 @@ public class GamePanel extends JPanel implements ActionListener{
 				// add winner name and time to the arraylists
 				winners.add(winner);
 				times.add(time.getDelay()*1.0*startTicks/1000.0);
-				
+
 				// update client so it knows to show the round/game end screen
 				AllOutScrap.sendUpdate();
 				if (phost.introunds==serieswin||pclient.introunds==serieswin) AllOutScrap.ssm.sendText("gameEnd"+strSep+winner+strSep+phost.introunds+strSep+pclient.introunds);
@@ -473,7 +473,7 @@ public class GamePanel extends JPanel implements ActionListener{
 		
 	}
 	
-	// on switch to next round, reset all values to default values
+	// on switch to next round, reset all fighting values to default values
 	public void nextRound() {
 		phost.intcenergy = 0;
 		pclient.intcenergy = 0;
@@ -484,6 +484,7 @@ public class GamePanel extends JPanel implements ActionListener{
 		backs[0].x = 0;
 		backs[1].x = 1280-256;
 		left2 = true;
+		left = false;
 		
 		AllOutScrap.sendUpdate();
 		AllOutScrap.ssm.sendText("nextRound");

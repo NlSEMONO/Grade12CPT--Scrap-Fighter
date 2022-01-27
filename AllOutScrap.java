@@ -330,6 +330,8 @@ public class AllOutScrap implements ActionListener,WindowListener, KeyListener, 
 		ssm.sendText("toMenu");
 		locked[0] = false;
 		locked[1] = false;
+		chars[0] = -1;
+		chars[1] = -1;
 		connected = false;
 		ssm.disconnect();
 		ssm = null;
@@ -360,17 +362,25 @@ public class AllOutScrap implements ActionListener,WindowListener, KeyListener, 
 		} else if (blnS&&(chars[0]==-1||chars[1]==-1)&&(locked[0]&&locked[1])) {
 			String send = "missing"+strSep;
 			themenu.thetxtarea.append("\n The following players must select a character:");
+			if (chars[0]==-1&&chars[1]==-1){
+				send+="0"+strSep+"1";
+				locked[0] = false;
+				themenu.thetxtarea.append("\n"+strUsers[0]);
+				themenu.thetxtarea.append("\n"+strUsers[1]);
+			} 
+			if (chars[1]==-1){
+				send+="1";
+				locked[1] = false;
+				themenu.thetxtarea.append("\n"+strUsers[1]);
+			}
 			if (chars[0]==-1){
 				send+="0";
 				locked[0] = false;
 				themenu.thetxtarea.append("\n"+strUsers[0]);
 			} 
-			if (chars[1]==-1){
-				send+=strSep+"1";
-				locked[1] = false;
-				themenu.thetxtarea.append("\n"+strUsers[1]);
-			}
 			ssm.sendText(send);
+			// exit method so you don't access indexs that are out of bounds
+			return;
 		// if not server (ie. client redirected to this method via toGame command in ssm), switch to game panel
 		} else if (!blnS) {
 			chars[1] = themenu.selected;
@@ -414,6 +424,7 @@ public class AllOutScrap implements ActionListener,WindowListener, KeyListener, 
 		game.pSprites2 = game.sprites2[chars[0]];
 		game.cSprites2 = game.sprites2[chars[1]];
 		
+		// reset variables
 		game.done = false;
 		game.phost.introunds = 0;
 		game.pclient.introunds = 0;
@@ -424,6 +435,7 @@ public class AllOutScrap implements ActionListener,WindowListener, KeyListener, 
 		game.defX2 = 0;
 		game.left = false;
 		game.left2 = true;
+		game.startTicks = 0;
 	}
 	
 	// update method for servers (did not want to call this ssm.sendText(...) multiple times) sends player coordinates, health, energy, facing left, ducking, jumping, and ulting for server fighter
@@ -522,6 +534,7 @@ public class AllOutScrap implements ActionListener,WindowListener, KeyListener, 
 					connected = false;
 					locked[1] = false;
 					themenu.otherselected = -1;
+					themenu.selected = -1;
 				} 
 			}
 		});
@@ -622,6 +635,8 @@ public class AllOutScrap implements ActionListener,WindowListener, KeyListener, 
 				// missing tells the client who has not selected their character despite readying up
 				} else if (strMess[0].equals("missing")) {
 					themenu.thetxtarea.append("\n The following players must select a character:");
+					System.out.println(strUsers[Integer.parseInt(strMess[1])]);
+					System.out.println(strUsers[1]);
 					if (strMess.length<3) {
 						themenu.thetxtarea.append("\n"+strUsers[Integer.parseInt(strMess[1])]);
 						locked[Integer.parseInt(strMess[1])] = false;
@@ -679,6 +694,10 @@ public class AllOutScrap implements ActionListener,WindowListener, KeyListener, 
 		
 		// make defualt health bar colour red
 		rgb[0] = 255;
+		
+		// default character selection = -1;
+		chars[0] = -1;
+		chars[1] = -1;
 	}
 	
 	//main method
