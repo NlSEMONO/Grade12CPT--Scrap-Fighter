@@ -143,8 +143,8 @@ public class AllOutScrap implements ActionListener,WindowListener, KeyListener, 
 				themenu.atks[0].x = themenu.r.x+40;
 				themenu.atks[1].x = themenu.r.x+40;
 			}
-			themenu.atks[0].y = themenu.r.y+50;
-			themenu.atks[1].y = themenu.r.y+75;
+			themenu.atks[0].y = themenu.r.y;
+			themenu.atks[1].y = themenu.r.y+25;
 			//comment
 			if (themenu.atking&&themenu.atks[themenu.up].intersects(themenu.dummy)&&themenu.atkTicks==0&&themenu.atkCd<1) {
 				System.out.println("OUCH!");

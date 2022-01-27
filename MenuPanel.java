@@ -67,8 +67,6 @@ public class MenuPanel extends JPanel implements ActionListener, ChangeListener{
 	boolean deced = false;
 	int jumpCd = 0;
 	
-	int add = 50;
-	
 	int numrounds;
 	String ipaddress;
 	JColorChooser thecolchooser = new JColorChooser();
@@ -136,8 +134,8 @@ public class MenuPanel extends JPanel implements ActionListener, ChangeListener{
 		thelabel.setLocation(855-(int)(pXDist*1.5),-682-(int)(pYDist*1.5));
 		thescroll.setLocation(971-(int)(pXDist*1.5),-1195-(int)(pYDist*1.5));
 		
-		r.x = Math.min(Math.max(r.x + defX,50),1230);
-		r.y = Math.min(Math.max(r.y + defY,50),620);
+		r.x = Math.min(Math.max(r.x + defX,r.width),1280-r.width);
+		r.y = Math.min(Math.max(r.y + defY,r.height),720-r.height);
 		
 		// bottom middle button on main menu
 		if (lastClick==3) {
@@ -145,7 +143,7 @@ public class MenuPanel extends JPanel implements ActionListener, ChangeListener{
 			
 			if (jump) {
 				r.y = (720-r.height)-((int)((vi*tme)+(accel*tme*tme)));
-				if (r.y-r.height > 720) {
+				if (r.y > 720-r.height) {
 					r.y = 720-r.height;
 					jump = false;
 					tme = -0.5;
@@ -159,14 +157,12 @@ public class MenuPanel extends JPanel implements ActionListener, ChangeListener{
 			// duck
 			if (duck&&!deced) {
 				r.height /= 2;
-				r.y = 720+r.height;
+				r.y += r.height;
 				deced = true;
-				add = 75;
 			} else if (!duck&&deced) {
 				deced = false;
 				r.height*=2;
-				r.y = 720-r.height;
-				add = 50;
+				r.y -= r.height/2;
 			}
 			
 			// dummy hitbox
@@ -175,7 +171,7 @@ public class MenuPanel extends JPanel implements ActionListener, ChangeListener{
 			menudraw.fillRect(dummy.x+1472-pXDist, dummy.y-pYDist, dummy.width, dummy.height);
 			// training fighter hitbox
 			menudraw.setColor(Color.black);
-			menudraw.fillRect(r.x+1472-pXDist, r.y-pYDist + add, r.width, r.height);
+			menudraw.fillRect(r.x+1472-pXDist, r.y-pYDist, r.width, r.height);
 			
 			if (atking) {
 				if (atkTicks<10) {
@@ -483,10 +479,10 @@ public class MenuPanel extends JPanel implements ActionListener, ChangeListener{
 		
 		AllOutScrap.theframe.requestFocus();
 		
-		// high atk
-		atks[0] = new Rectangle(r.x+10, r.y, 50, 25);
-		// low atk
-		atks[1] = new Rectangle(r.x+10, r.y+25, 50, 25);
+		//high atk
+		atks[0] = new Rectangle(0,0, 50, 25);
+		//low atk
+		atks[1] = new Rectangle(0,0, 50, 25);
 		
 		cred = img("ScrapFighter-CreditsImage.png");
 		helpscreenbg = img("SFHelpScreenBG.jpg");	

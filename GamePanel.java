@@ -304,10 +304,11 @@ public class GamePanel extends JPanel implements ActionListener{
 		if (ult) {
 			if (ultTicks==0) {
 				if (atks[1].intersects(dummy)&&AllOutScrap.blnS) {
-					phost.intcenergy = 0;
+					
 					if (!done) pclient.intchealth -= phost.intpattack*3;
 					kb = true;
 				}
+				phost.intcenergy = 0;
 			} 
 			// show attack on screen
 			if (ultTicks<40) {
@@ -330,10 +331,10 @@ public class GamePanel extends JPanel implements ActionListener{
 		if (ult2) {
 			if (ultTicks2==0) {
 				if (atks2[1].intersects(fighter)&&AllOutScrap.blnS) {
-					pclient.intcenergy = 0;
 					if (!done) phost.intchealth -= pclient.intpattack*3;
 					kb = true;
 				}
+				pclient.intcenergy = 0;
 			} 
 			// show attack on screen
 			if (ultTicks2<40) {
