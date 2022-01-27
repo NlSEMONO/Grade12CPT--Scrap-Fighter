@@ -11,9 +11,25 @@ import java.util.ArrayList;
 import java.awt.*;
 import java.awt.image.*;
 
+/**
+ * <h1>SFCharStatsRender</h1>
+ * This class reads data from text files and loads that data into the appropriate type of data structure. <p>
+ * Each method will return data that was loaded in locally for use in AllOutScrap (controller class). <p>
+ * @author Francis Madarang
+ * @version 2.2
+ * @since 2022-1-10
+ **/
+
+
 //This is a model type class that will load the character stats from the CSV file into a 2D array that can quickly be referenced
 public class SFCharStatsRender{
-
+	/**
+	 * This method reads data from a text file INSIDE the .jar file this class is in and stores it in a 2D array, which will be returned. It always ignores the first line of the text file because it assumes that the first line is table headers for the data. <p>
+	 * @param strFile File INSIDE the .jar file that the user wants to read data from
+	 * @param intRow Number of rows to read starting from row 0
+	 * @param intCol Number of columns to read starting from column 0
+	 * @return 2D array with data from text file loaded inside it
+	 */
 	// Method to get a specific number of rows and columns from a text file.
 	// Parameters specify how many rows and columns are created for the 2D array
 	public String[][] CharStatsRender(String strFile, int intRow, int intCol){
@@ -56,6 +72,10 @@ public class SFCharStatsRender{
 		
 	}
 	
+	/**
+	 * This method reads data from a text file called "winners.txt" OUTSIDE the .jar file this class is in, stores it in an ArrayList and returns it. <p>
+	 * @return ArrayList (maximum size of ArrayList is 15) of String arrays (length of String arrays is 2) where index 0 is the name of the top scorer, and index 1 is the time it took them to win the game. <p>
+	 */
 	// Method to get names and times of high scorers inside winners.txt (IN FOLDER, NOT JAR) (THIS IS WHERE STUFF IS WRITTEN) 
 	public ArrayList<String[]> highscores() {
 		ArrayList<String[]> ret = new ArrayList<>(); // return variable
@@ -88,7 +108,10 @@ public class SFCharStatsRender{
 		}
 		return ret;
 	}
-	
+	/**
+	 * Create a SFCharStatsRender object. <p>
+	 * 
+	 */
 	public SFCharStatsRender(){
 		
 	}
