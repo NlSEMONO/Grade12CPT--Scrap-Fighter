@@ -24,6 +24,7 @@ public class MenuPanel extends JPanel implements ActionListener, ChangeListener{
 	JTextArea thetxtarea = new JTextArea("Chat Area!!!"); // area chat messages are displayed on
 	JScrollPane thescroll = new JScrollPane(thetxtarea); // scrollpane attached to the textarea
 	JButton randomComponent = new JButton("don't click me"); // random button that's not used at all
+	JLabel colLbl = new JLabel("Change health bar colour in-game");
 		
 	//combine mouse x and y into one point
 	Point mousePos = new Point(640,360);
@@ -267,7 +268,8 @@ public class MenuPanel extends JPanel implements ActionListener, ChangeListener{
 		else if (lastClick==0 || lastClick == 1) {
 			menudraw.setColor(Color.black);
 			menudraw.drawString("CHOOSE YOUR FIGHTER", 500-(int)(pXDist*1.25), -1000-(int)(pYDist*1.25));
-		 // draw character select buttons
+			colLbl.setLocation(675-(int)(pXDist*1.25), -350-(int)(pYDist*1.25));
+			// draw character select buttons
 			for (int i=0;i<4;i++) select[i].setLocation(50+(200*(i%2))-(int)(pXDist*1.25), -985+(200*(i/2)-(int)(pYDist*1.25)));
 			for (int i=0;i<4;i++) {
 				// check if button was clicked
@@ -330,6 +332,7 @@ public class MenuPanel extends JPanel implements ActionListener, ChangeListener{
 			usernamefield.setVisible(true);
 			if (AllOutScrap.blnS) theslider.setVisible(true);
 			if (!AllOutScrap.blnS) thelabel.setVisible(false);
+			colLbl.setVisible(true);
 			if (AllOutScrap.blnS == true){
 				buttons[11].setLocation(250-(int)(pXDist*1.5),-622-(int)(pYDist*1.5));	//croom Button
 			} else{ 
@@ -347,6 +350,7 @@ public class MenuPanel extends JPanel implements ActionListener, ChangeListener{
 			usernamefield.setEditable(false);
 			usernamefield.setVisible(false);
 			theslider.setVisible(false);
+			colLbl.setVisible(false);
 			buttons[11].setLocation(10000-(int)(pXDist*1.5),-10000-(int)(pYDist*1.5));	//croom Button
 			buttons[12].setLocation(10000-(int)(pXDist*1.5),-10000-(int)(pYDist*1.5));	//jroom Button
 			buttons[13].setLocation(10000-(int)(pXDist*1.5),-10000-(int)(pYDist*1.5));	//lroom Button
@@ -511,6 +515,12 @@ public class MenuPanel extends JPanel implements ActionListener, ChangeListener{
 		} catch (Exception e) {
 			font2 = new Font("SansSerif", Font.PLAIN, 15);
 		}
+		
+		// make colour label 15px font and add to panel
+		colLbl.setFont(font2); 
+		colLbl.setSize(250, 50);
+		colLbl.setVisible(false);
+		add(colLbl);
 		
 		// slider label settings
 		thelabel.setFont(font2);
