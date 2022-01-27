@@ -230,7 +230,12 @@ public class MenuPanel extends JPanel implements ActionListener, ChangeListener{
 						if (AllOutScrap.connected) {
 							selected = (selected == i || (otherselected == i && otherselected!=-1)) ? -1 : i;
 							hovered = -1;
-							if (AllOutScrap.blnS) System.out.println(selected);
+							if (AllOutScrap.blnS) {
+								System.out.println(selected);
+								AllOutScrap.chars[0] = selected;
+							} else {
+								AllOutScrap.chars[1] = selected;
+							}
 							AllOutScrap.ssm.sendText("choose"+AllOutScrap.strSep+selected);
 						} else {
 							thetxtarea.append("\nWait for another player to join your room before selecting a character.");

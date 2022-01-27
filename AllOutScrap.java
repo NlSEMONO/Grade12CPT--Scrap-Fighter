@@ -198,7 +198,8 @@ public class AllOutScrap implements ActionListener,WindowListener, KeyListener, 
 							} catch (IOException e){
 								System.out.println(e.toString());
 							} 
-							 
+							game.times.clear();
+							game.winners.clear();
 						} 
 						else game.nextRound();
 					} else {
@@ -353,9 +354,6 @@ public class AllOutScrap implements ActionListener,WindowListener, KeyListener, 
 			theframe.setContentPane(game);
 			theframe.pack();
 			inGame = true;
-			
-			
-			
 			// hitboxes temporary for client side
 			for (int i=0;i<8;i++) for (int j=0;j<4;j++) game.hbxH[i][j] = Integer.parseInt(hbxes[8*chars[0]+i][j]); 
 			for (int i=0;i<8;i++) for (int j=0;j<4;j++) game.hbxC[i][j] = Integer.parseInt(hbxes[8*chars[1]+i][j]); 
@@ -390,6 +388,9 @@ public class AllOutScrap implements ActionListener,WindowListener, KeyListener, 
 		System.out.println("yes"+" "+chars[0] +" "+chars[1]);
 		game.pSprites = game.sprites[chars[0]];
 		game.cSprites = game.sprites[chars[1]];
+		
+		game.pSprites2 = game.sprites2[chars[0]];
+		game.cSprites2 = game.sprites2[chars[1]];
 	}
 	
 	public static void sendUpdate() {

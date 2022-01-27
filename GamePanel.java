@@ -6,6 +6,8 @@ import javax.imageio.*;
 import java.util.ArrayList;
 import javax.swing.event.*;
 import java.awt.event.*;
+import java.awt.geom.AffineTransform;
+import java.awt.image.AffineTransformOp;
 
 public class GamePanel extends JPanel implements ActionListener{
 	Timer time = new Timer(1000/80, this);
@@ -59,9 +61,13 @@ public class GamePanel extends JPanel implements ActionListener{
 	
 	BufferedImage end;
 	BufferedImage[][] sprites = new BufferedImage[4][8];
+	BufferedImage[][] sprites2 = new BufferedImage[4][8];
 	
 	BufferedImage[] pSprites;
 	BufferedImage[] cSprites;
+	
+	BufferedImage[] pSprites2;
+	BufferedImage[] cSprites2;
 	
 	int intDis = 0;
 	int intDis2 = 0;
@@ -169,6 +175,8 @@ public class GamePanel extends JPanel implements ActionListener{
 			jumpCd2--;
 		}
 		
+		
+		
 		// change hitbox x and y based on where the images are
 		if (left) {
 			fighter.x = backs[0].x+backs[0].width-hbxH[currHbxH][2]-fighter.width;	
@@ -251,6 +259,7 @@ public class GamePanel extends JPanel implements ActionListener{
 					backs[1].x = fighter.x > dummy.x ? Math.max(0, backs[1].x-(1000/pclient.intpweight/10)) : Math.min(backs[1].x+(1000/pclient.intpweight/10), 1280-256);
 					currHbxC = 6;
 					AllOutScrap.ssm.sendText("knockback"+AllOutScrap.strSep+"0");
+					left2 = fighter.x > dummy.x ? false : true;
 				}
 				g.setColor(Color.blue);
 				g.fillRect(atks[up].x, atks[up].y, atks[up].width, atks[up].height);
@@ -277,6 +286,7 @@ public class GamePanel extends JPanel implements ActionListener{
 					backs[0].x = fighter.x < dummy.x ? Math.max(0, backs[0].x-(1000/phost.intpweight/10)) : Math.min(backs[0].x+(1000/phost.intpweight/10), 1280-256);
 					currHbxH = 6;
 					AllOutScrap.ssm.sendText("knockback"+AllOutScrap.strSep+"1");
+					left = fighter.x < dummy.x ? false : true;
 				}
 				g.setColor(Color.blue);
 				g.fillRect(atks2[up2].x, atks2[up2].y, atks2[up2].width, atks2[up2].height);
@@ -305,6 +315,7 @@ public class GamePanel extends JPanel implements ActionListener{
 					backs[1].x = fighter.x > dummy.x ? Math.max(0, backs[1].x-(3000/pclient.intpweight/40)) : Math.min(backs[1].x+(3000/pclient.intpweight/40), 1280-256);
 					currHbxC = 6;
 					AllOutScrap.ssm.sendText("knockback"+AllOutScrap.strSep+"0");
+					left2 = fighter.x > dummy.x ? false : true;
 				}
 				g.setColor(Color.blue);
 				g.fillRect(atks[1].x, atks[1].y, atks[1].width, atks[1].height);
@@ -330,6 +341,7 @@ public class GamePanel extends JPanel implements ActionListener{
 					backs[0].x = fighter.x < dummy.x ? Math.max(0, backs[0].x-(3000/phost.intpweight/40)) : Math.min(backs[0].x+(3000/phost.intpweight/40), 1280-256);
 					currHbxH = 6;
 					AllOutScrap.ssm.sendText("knockback"+AllOutScrap.strSep+"1");
+					left = fighter.x < dummy.x ? false : true;
 				}
 				g.setColor(Color.blue);
 				g.fillRect(atks2[1].x, atks2[1].y, atks2[1].width, atks2[1].height);
@@ -377,13 +389,38 @@ public class GamePanel extends JPanel implements ActionListener{
 			} else {
 				currHbxC = 7;
 			}
-			g.drawImage(pSprites[currHbxH], backs[0].x, backs[0].y, null);
-			g.drawImage(cSprites[currHbxC], backs[1].x, backs[1].y, null);
+			
+			if (left) {
+				if (pSprites2[currHbxH].getWidth()>256) g.drawImage(pSprites2[currHbxH], backs[0].x-256, backs[0].y, null);
+				else g.drawImage(pSprites2[currHbxH], backs[0].x, backs[0].y, null);
+			} else {
+				g.drawImage(pSprites[currHbxH], backs[0].x, backs[0].y, null);
+			}
+			
+			if (left2) {
+				if (cSprites2[currHbxC].getWidth()>256) g.drawImage(cSprites2[currHbxC], backs[1].x-256, backs[1].y, null);
+				else g.drawImage(cSprites2[currHbxC], backs[1].x, backs[1].y, null);
+			} else {
+				 g.drawImage(cSprites[currHbxC], backs[1].x, backs[1].y, null);
+			}
+			
 			g.drawImage(end, 0, 0, null);
 			g.drawString(toScreen, 350, 350);
 		} else {
-			g.drawImage(pSprites[currHbxH], backs[0].x, backs[0].y, null);
-			g.drawImage(cSprites[currHbxC], backs[1].x, backs[1].y, null);
+			if (left) {
+				if (pSprites2[currHbxH].getWidth()>256) g.drawImage(pSprites2[currHbxH], backs[0].x-256, backs[0].y, null);
+				else g.drawImage(pSprites2[currHbxH], backs[0].x, backs[0].y, null);
+				
+			} else {
+				g.drawImage(pSprites[currHbxH], backs[0].x, backs[0].y, null);
+			}
+			
+			if (left2) {
+				if (cSprites2[currHbxC].getWidth()>256) g.drawImage(cSprites2[currHbxC], backs[1].x-256, backs[1].y, null);
+				else g.drawImage(cSprites2[currHbxC], backs[1].x, backs[1].y, null);
+			} else {
+				g.drawImage(cSprites[currHbxC], backs[1].x, backs[1].y, null);
+			}
 		}
 		
 	}
@@ -456,12 +493,19 @@ public class GamePanel extends JPanel implements ActionListener{
 		
 		loadImages("moby", 0);
 		loadImages("scorp", 2);
+		loadImages("luz", 1);
+		loadImages("amelia", 3);
 	}
 	
 	public void loadImages(String strPrefix, int intRow) {
 		for (int intC=0;intC<8;intC++) {
 			sprites[intRow][intC] = img(strPrefix+intC+".png");
-		} 
+			sprites2[intRow][intC] = sprites[intRow][intC];
+			AffineTransform tx = AffineTransform.getScaleInstance(-1, 1);
+			tx.translate(-sprites2[intRow][intC].getWidth(null), 0);
+			AffineTransformOp op = new AffineTransformOp(tx, AffineTransformOp.TYPE_NEAREST_NEIGHBOR);
+			sprites2[intRow][intC] = op.filter(sprites2[intRow][intC], null);
+		}
 	}
 
 	@Override
