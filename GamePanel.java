@@ -61,7 +61,7 @@ public class GamePanel extends JPanel implements ActionListener{
 	int chatTicks = 0;
 	
 	// chat message box, scrollpane and textarea
-	JTextArea chat = new JTextArea();
+	JTextArea chat = new JTextArea("Chat area!");
 	JScrollPane scr = new JScrollPane(chat);
 	JTextField mess = new JTextField();
 	String chatText = "";
@@ -533,8 +533,8 @@ public class GamePanel extends JPanel implements ActionListener{
 		add(mess);
 		chat.setEditable(false);
 		chat.setLineWrap(true);
-		scr.setVisible(false);
-		mess.setVisible(false);
+		scr.setVisible(true);
+		mess.setVisible(true);
 		
 		// add listener to message box
 		mess.addActionListener(this); 
@@ -578,9 +578,12 @@ public class GamePanel extends JPanel implements ActionListener{
 		if (e.getSource()==time) {
 			this.repaint();
 			// add to ticks to track round speed, game speed and ticks since last chat activity
-			if (!mess.isVisible()) chatTicks++;
+			chatTicks++;
 			// chat stays for 5 seconds if you don't type
-			if (chatTicks*time.getDelay()>=5000) scr.setVisible(false);
+			if (chatTicks*time.getDelay()>=5000) {
+				scr.setVisible(false);
+				mess.setVisible(false);
+			}
 			startTicks++;
 		// if the message box recieves a signal, append it to the chat, clear the message box and make it invisible (so the user has to press enter again)
 		} else if (e.getSource()==mess&&!mess.getText().equals("")) {

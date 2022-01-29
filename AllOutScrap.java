@@ -276,12 +276,10 @@ public class AllOutScrap implements ActionListener,WindowListener, KeyListener, 
 			
 			// enter key opens the chat and message box
 			if (evt.getKeyCode()==10) {
-				if (!game.mess.isVisible()) {
-					game.chatTicks = 0;
-					game.mess.setVisible(true);
-					game.scr.setVisible(true);
-					game.mess.requestFocus();
-				}
+				game.chatTicks = 0;
+				game.mess.setVisible(true);
+				game.scr.setVisible(true);
+				game.mess.requestFocus();
 			}
 			
 			game.repaint();
@@ -437,6 +435,8 @@ public class AllOutScrap implements ActionListener,WindowListener, KeyListener, 
 		game.left = false;
 		game.left2 = true;
 		game.startTicks = 0;
+		game.chatTicks = 0;
+		game.scr.setVisible(true);
 	}
 	
 	// update method for servers (did not want to call this ssm.sendText(...) multiple times) sends player coordinates, health, energy, facing left, ducking, jumping, and ulting for server fighter
